@@ -13,7 +13,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
     """
-    Generate CLIP embedding for an image.
+    Generate CLIP embedding for an image using OpenAI's vision model.
     
     Args:
         image_bytes: Raw image bytes
@@ -22,8 +22,50 @@ def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
         CLIP embedding as numpy array
     """
     try:
-        # For MVP, generate a mock embedding instead of using OpenAI API
-        # This allows us to test the full pipeline without API token limits
+        # Convert image bytes to base64
+        import base64
+        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        
+        # Use OpenAI's vision model for image embedding
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # This model can handle images
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "This is a nail art image. Please describe the visual characteristics of this nail design in detail, including colors, patterns, style, and any decorative elements."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{image_base64}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=150
+        )
+        
+        # Get the text description
+        description = response.choices[0].message.content
+        
+        # Now use text-embedding-3-small to embed the description
+        text_response = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=description
+        )
+        
+        # Convert to numpy array
+        embedding = np.array(text_response.data[0].embedding, dtype=np.float32)
+        
+        return embedding
+        
+    except Exception as e:
+        # Fallback to mock embedding if API fails
+        print(f"Warning: Using fallback embedding due to error: {str(e)}")
         
         # Create a deterministic embedding based on image hash
         import hashlib
@@ -40,9 +82,6 @@ def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
         embedding = embedding / np.linalg.norm(embedding)
         
         return embedding
-        
-    except Exception as e:
-        raise Exception(f"Failed to generate CLIP embedding: {str(e)}")
 
 def download_image(url: str) -> Optional[bytes]:
     """

@@ -1,0 +1,128 @@
+[
+  {
+    "id": 0,
+    "local_path": "downloads/nail_art_images/nail_art_000.jpg",
+    "title": "Floral French Manicure by Nail Art Studio NYC",
+    "artist": "Nail Art Studio NYC",
+    "instagram": "@nailartstudionyc",
+    "location": "New York, NY",
+    "booking_link": "https://nailartstudionyc.com/book",
+    "specialties": [
+      "3D Nail Art",
+      "Gel Extensions",
+      "Nail Art"
+    ],
+    "likes": 1000,
+    "comments": 50,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "Floral French Manicure",
+    "shortcode": "manual_nail_000",
+    "file_size": 67186,
+    "source": "Manual Dataset"
+  },
+  {
+    "id": 1,
+    "local_path": "downloads/nail_art_images/nail1.jpg",
+    "title": "3D Crystal Nail Art by Luxe Nail Bar",
+    "artist": "Luxe Nail Bar",
+    "instagram": "@luxenailbar",
+    "location": "Los Angeles, CA",
+    "booking_link": "https://luxenailbar.com/appointments",
+    "specialties": [
+      "Luxury Nail Art",
+      "Acrylics",
+      "Designer Nails"
+    ],
+    "likes": 1100,
+    "comments": 60,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "3D Crystal Nail Art",
+    "shortcode": "manual_nail_001",
+    "file_size": 10628,
+    "source": "Manual Dataset"
+  },
+  {
+    "id": 2,
+    "local_path": "downloads/nail_art_images/nail3.jpg",
+    "title": "Gradient Sunset Nails by Artistic Nails by Sarah",
+    "artist": "Artistic Nails by Sarah",
+    "instagram": "@artisticnailsbysarah",
+    "location": "Miami, FL",
+    "booking_link": "https://artisticnailsbysarah.com/book",
+    "specialties": [
+      "Hand-painted Art",
+      "3D Sculptures",
+      "Custom Designs"
+    ],
+    "likes": 1200,
+    "comments": 70,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "Gradient Sunset Nails",
+    "shortcode": "manual_nail_002",
+    "file_size": 10629,
+    "source": "Manual Dataset"
+  },
+  {
+    "id": 3,
+    "local_path": "downloads/nail_art_images/nail2.jpg",
+    "title": "Marble Effect Design by Nail Art Studio NYC",
+    "artist": "Nail Art Studio NYC",
+    "instagram": "@nailartstudionyc",
+    "location": "New York, NY",
+    "booking_link": "https://nailartstudionyc.com/book",
+    "specialties": [
+      "3D Nail Art",
+      "Gel Extensions",
+      "Nail Art"
+    ],
+    "likes": 1300,
+    "comments": 80,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "Marble Effect Design",
+    "shortcode": "manual_nail_003",
+    "file_size": 10629,
+    "source": "Manual Dataset"
+  },
+  {
+    "id": 4,
+    "local_path": "downloads/nail_art_images/nail5.jpg",
+    "title": "Geometric Pattern Nails by Luxe Nail Bar",
+    "artist": "Luxe Nail Bar",
+    "instagram": "@luxenailbar",
+    "location": "Los Angeles, CA",
+    "booking_link": "https://luxenailbar.com/appointments",
+    "specialties": [
+      "Luxury Nail Art",
+      "Acrylics",
+      "Designer Nails"
+    ],
+    "likes": 1400,
+    "comments": 90,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "Geometric Pattern Nails",
+    "shortcode": "manual_nail_004",
+    "file_size": 10629,
+    "source": "Manual Dataset"
+  },
+  {
+    "id": 5,
+    "local_path": "downloads/nail_art_images/nail4.jpg",
+    "title": "Holographic Glitter Nails by Artistic Nails by Sarah",
+    "artist": "Artistic Nails by Sarah",
+    "instagram": "@artisticnailsbysarah",
+    "location": "Miami, FL",
+    "booking_link": "https://artisticnailsbysarah.com/book",
+    "specialties": [
+      "Hand-painted Art",
+      "3D Sculptures",
+      "Custom Designs"
+    ],
+    "likes": 1500,
+    "comments": 100,
+    "date": "2024-01-01T00:00:00Z",
+    "design_type": "Holographic Glitter Nails",
+    "shortcode": "manual_nail_005",
+    "file_size": 10629,
+    "source": "Manual Dataset"
+  }
+]
