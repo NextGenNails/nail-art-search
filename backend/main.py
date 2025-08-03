@@ -12,7 +12,7 @@ import numpy as np
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
 
 from embed import get_clip_embedding
-from query import vector_search
+from query import vector_search, load_index
 
 app = FastAPI(
     title="Nail Art Visual Similarity Search API",
@@ -28,6 +28,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Load the FAISS index at startup
+@app.on_event("startup")
+async def startup_event():
+    """Load the FAISS index when the application starts"""
+    try:
+        index_path = os.path.join(os.path.dirname(__file__), '..', 'data-pipeline', 'nail_art_index.faiss')
+        metadata_path = os.path.join(os.path.dirname(__file__), '..', 'data-pipeline', 'nail_art_metadata.pkl')
+        load_index(index_path, metadata_path)
+        print(f"✅ FAISS index loaded successfully from {index_path}")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not load FAISS index: {str(e)}")
 
 @app.get("/")
 async def root():

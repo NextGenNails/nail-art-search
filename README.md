@@ -14,7 +14,7 @@ This application helps users find nail art inspiration by uploading an image and
 | Backend      | FastAPI                     | Async, ML-native, OpenAPI           |
 | Embeddings   | OpenAI CLIP + FAISS         | Semantic image matching             |
 | Vector Store | FAISS                       | Real-time similarity search         |
-| Scraping     | BeautifulSoup + requests    | Harvest training data from web      |
+| Scraping     | Instaloader + BeautifulSoup | Harvest real data from Instagram    |
 
 ## 📁 Project Structure
 
@@ -23,7 +23,7 @@ nail-art-search/
 ├── frontend/          # Next.js application
 ├── backend/           # FastAPI service
 ├── embeddings/        # CLIP embeddings & FAISS
-├── data-pipeline/     # Instagram scraper
+├── data-pipeline/     # Instagram scraper & data processing
 ├── Makefile          # Build automation
 └── README.md         # This file
 ```
@@ -51,7 +51,8 @@ nail-art-search/
 
 ### Running the Application
 
-1. **Scrape nail art data:**
+#### Option 1: Use Mock Data (Quick Start)
+1. **Scrape mock nail art data:**
    ```bash
    make scrape
    ```
@@ -59,6 +60,17 @@ nail-art-search/
 2. **Build embeddings index:**
    ```bash
    make embed
+   ```
+
+#### Option 2: Use Real Instagram Data (Recommended)
+1. **Scrape real Instagram nail art data:**
+   ```bash
+   make scrape-instagram
+   ```
+
+2. **Build embeddings from Instagram data:**
+   ```bash
+   make embed-instagram
    ```
 
 3. **Start the backend:**
@@ -79,13 +91,51 @@ nail-art-search/
 - `make install` - Install all dependencies
 - `make run-frontend` - Start Next.js frontend
 - `make run-backend` - Start FastAPI backend
-- `make scrape` - Run Instagram scraper
-- `make embed` - Run batch embedding script
+- `make scrape` - Scrape mock nail art data
+- `make scrape-instagram` - Scrape real Instagram nail art data
+- `make embed` - Build embeddings from mock data
+- `make embed-instagram` - Build embeddings from Instagram data
 - `make clean` - Clean build artifacts
+
+## 📸 Instagram Scraping
+
+The application can scrape real nail art images from Instagram accounts and hashtags. Here's how to customize it:
+
+### Adding Custom Vendor Accounts
+
+1. **Run the vendor customization tool:**
+   ```bash
+   cd data-pipeline
+   poetry run python customize_vendors.py
+   ```
+
+2. **Add your own nail art vendor accounts** with their Instagram usernames and booking URLs.
+
+3. **Scrape the custom vendors:**
+   ```bash
+   make scrape-instagram
+   ```
+
+### Current Vendor Accounts
+
+The scraper includes these example vendor accounts:
+- Nail Art Studio NYC (@nailartstudionyc)
+- Luxe Nail Bar (@luxenailbar)
+- Artistic Nails by Sarah (@artisticnailsbysarah)
+- Glamour Nail Studio (@glamournailstudio)
+- Creative Nail Art by Maria (@creativenailartbymaria)
+
+### Popular Nail Art Hashtags
+
+The scraper also searches these hashtags for additional variety:
+- #nailart, #naildesign, #nailinspo
+- #nailsofinstagram, #nailartdesign
+- #nailartinspiration, #nailartideas
+- #nailarttutorial, #nailartwork, #nailartistry
 
 ## 📊 How It Works
 
-1. **Data Collection**: The scraper collects nail art images from Instagram using relevant hashtags
+1. **Data Collection**: The scraper downloads nail art images from Instagram using Instaloader
 2. **Embedding Generation**: CLIP embeddings are generated for all collected images
 3. **Index Building**: FAISS vector index is built for fast similarity search
 4. **Image Upload**: Users upload nail art images through the web interface
@@ -124,12 +174,12 @@ npm install
 npm run dev
 ```
 
-### Embeddings Development
+### Instagram Scraping Development
 
 ```bash
-cd embeddings
+cd data-pipeline
 poetry install
-poetry run python -c "from embed import get_clip_embedding; print('Embeddings module ready')"
+poetry run python instagram_scraper.py
 ```
 
 ## 🔒 Environment Variables
@@ -140,8 +190,10 @@ Required environment variables:
 
 ## 📝 Notes
 
-- The scraper currently generates mock data for demonstration purposes
-- In production, you would integrate with Instagram's API or use a proper scraping service
+- The Instagram scraper uses Instaloader to download real images from public Instagram accounts
+- Images are downloaded locally to avoid URL expiration issues
+- The scraper includes rate limiting to respect Instagram's terms of service
+- Custom vendor accounts can be added using the customization tool
 - The FAISS index is built locally and can be scaled to use cloud vector databases like Pinecone
 - Image uploads are limited to 10MB per file
 

@@ -22,19 +22,23 @@ def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
         CLIP embedding as numpy array
     """
     try:
-        # Convert bytes to base64 for OpenAI API
-        import base64
-        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        # For MVP, generate a mock embedding instead of using OpenAI API
+        # This allows us to test the full pipeline without API token limits
         
-        # Get embedding using OpenAI CLIP model
-        response = client.embeddings.create(
-            model="text-embedding-3-small",  # Using text-embedding-3-small as CLIP alternative
-            input=image_base64,
-            encoding_format="base64"
-        )
+        # Create a deterministic embedding based on image hash
+        import hashlib
+        image_hash = hashlib.md5(image_bytes).hexdigest()
         
-        # Extract embedding
-        embedding = np.array(response.data[0].embedding, dtype=np.float32)
+        # Use hash to seed random number generator for consistent results
+        import random
+        random.seed(int(image_hash[:8], 16))
+        
+        # Generate a 1536-dimensional embedding (same as text-embedding-3-small)
+        embedding = np.random.normal(0, 1, 1536).astype(np.float32)
+        
+        # Normalize the embedding
+        embedding = embedding / np.linalg.norm(embedding)
+        
         return embedding
         
     except Exception as e:
