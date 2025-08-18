@@ -3,7 +3,7 @@ import sys
 from typing import List, Dict, Any
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 import io
 from PIL import Image
 import numpy as np
@@ -80,6 +80,17 @@ async def match_image(file: UploadFile = File(...)) -> List[Dict[str, Any]]:
         # Search for similar images
         try:
             results = vector_search(query_embedding, top_k=10)
+            
+            # Convert local file paths to proper URLs
+            for result in results:
+                if 'local_path' in result:
+                    # Extract just the filename from the local path
+                    filename = os.path.basename(result['local_path'])
+                    # Create a proper URL for the frontend
+                    result['url'] = f"http://localhost:8000/images/{filename}"
+                    # Remove the local_path since frontend doesn't need it
+                    del result['local_path']
+                    
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to search vectors: {str(e)}")
         
@@ -94,6 +105,34 @@ async def match_image(file: UploadFile = File(...)) -> List[Dict[str, Any]]:
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy"}
+
+@app.get("/images/{image_name}")
+async def serve_image(image_name: str):
+    """
+    Serve images from the nail art images directory.
+    
+    Args:
+        image_name: Name of the image file to serve
+        
+    Returns:
+        Image file response
+    """
+    try:
+        # Construct the path to the image
+        images_dir = os.path.join(os.path.dirname(__file__), '..', 'data-pipeline', 'downloads', 'nail_art_images')
+        image_path = os.path.join(images_dir, image_name)
+        
+        # Check if file exists
+        if not os.path.exists(image_path):
+            raise HTTPException(status_code=404, detail="Image not found")
+        
+        # Return the image file
+        return FileResponse(image_path)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error serving image: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
