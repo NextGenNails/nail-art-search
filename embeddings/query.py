@@ -70,7 +70,7 @@ def vector_search(query_vector: np.ndarray, top_k: int = 10) -> List[Dict[str, A
     for i, (score, idx) in enumerate(zip(scores[0], indices[0])):
         if idx < len(_metadata):
             result = {
-                "url": _metadata[idx].get("url", ""),
+                "local_path": _metadata[idx].get("local_path", ""),  # Changed from "url" to "local_path"
                 "score": float(score),
                 "booking_link": _metadata[idx].get("booking_link", ""),
                 "title": _metadata[idx].get("title", ""),
