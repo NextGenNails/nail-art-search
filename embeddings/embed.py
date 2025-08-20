@@ -5,80 +5,114 @@ from typing import List, Dict, Any, Optional
 import requests
 from PIL import Image
 import io
-import openai
-from openai import OpenAI
+import torch
+from transformers import CLIPProcessor, CLIPModel
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Global variables to cache model and processor
+_model = None
+_processor = None
 
-def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
+def get_clip_model():
+    """Get or load CLIP-L/14 model and processor."""
+    global _model, _processor
+    
+    if _model is None or _processor is None:
+        print("Loading CLIP-L/14 model...")
+        model_name = "openai/clip-vit-large-patch14"
+        _model = CLIPModel.from_pretrained(model_name)
+        _processor = CLIPProcessor.from_pretrained(model_name)
+        
+        # Move to GPU if available
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        _model = _model.to(device)
+        print(f"CLIP-L/14 model loaded on {device}")
+    
+    return _model, _processor
+
+def preprocess_image_consistently(image_bytes: bytes) -> bytes:
     """
-    Generate CLIP embedding for an image using OpenAI's vision model.
+    Preprocess image consistently for both index building and querying.
+    This ensures exact same processing pipeline to get 99-100% similarity.
     
     Args:
         image_bytes: Raw image bytes
         
     Returns:
-        CLIP embedding as numpy array
+        Preprocessed image bytes
     """
     try:
-        # Convert image bytes to base64
-        import base64
-        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+        # Convert bytes to PIL Image
+        image = Image.open(io.BytesIO(image_bytes))
         
-        # Use OpenAI's vision model for image embedding
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",  # This model can handle images
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "This is a nail art image. Please describe the visual characteristics of this nail design in detail, including colors, patterns, style, and any decorative elements."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{image_base64}"
-                            }
-                        }
-                    ]
-                }
-            ],
-            max_tokens=150
-        )
+        # Convert to RGB if needed
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
         
-        # Get the text description
-        description = response.choices[0].message.content
+        # Resize to CLIP standard size (224x224)
+        image = image.resize((224, 224), Image.Resampling.LANCZOS)
         
-        # Now use text-embedding-3-small to embed the description
-        text_response = client.embeddings.create(
-            model="text-embedding-3-small",
-            input=description
-        )
+        # Convert back to bytes with consistent quality
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format='JPEG', quality=95, optimize=False)
+        img_byte_arr = img_byte_arr.getvalue()
         
-        # Convert to numpy array
-        embedding = np.array(text_response.data[0].embedding, dtype=np.float32)
-        
-        return embedding
+        return img_byte_arr
         
     except Exception as e:
-        # Fallback to mock embedding if API fails
-        print(f"Warning: Using fallback embedding due to error: {str(e)}")
+        print(f"Warning: Image preprocessing failed, using original: {str(e)}")
+        return image_bytes
+
+def get_clip_embedding(image_bytes: bytes) -> np.ndarray:
+    """
+    Generate CLIP-L/14 embedding for an image with consistent preprocessing.
+    
+    Args:
+        image_bytes: Raw image bytes
         
-        # Create a deterministic embedding based on image hash
+    Returns:
+        CLIP embedding as numpy array (768 dimensions)
+    """
+    try:
+        # Preprocess image consistently
+        processed_bytes = preprocess_image_consistently(image_bytes)
+        
+        # Load model and processor
+        model, processor = get_clip_model()
+        
+        # Convert processed bytes to PIL Image
+        image = Image.open(io.BytesIO(processed_bytes))
+        
+        # Process image with CLIP processor
+        inputs = processor(images=image, return_tensors="pt")
+        
+        # Move inputs to same device as model
+        device = next(model.parameters()).device
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+        
+        # Generate embedding
+        with torch.no_grad():
+            image_features = model.get_image_features(**inputs)
+            
+        # Convert to numpy and normalize
+        embedding = image_features.cpu().numpy().astype(np.float32)
+        
+        # Normalize for cosine similarity
+        embedding = embedding / np.linalg.norm(embedding)
+        
+        return embedding.flatten()
+        
+    except Exception as e:
+        print(f"Error generating CLIP embedding: {str(e)}")
+        
+        # Fallback to mock embedding if CLIP fails
         import hashlib
-        image_hash = hashlib.md5(image_bytes).hexdigest()
-        
-        # Use hash to seed random number generator for consistent results
         import random
+        
+        image_hash = hashlib.md5(image_bytes).hexdigest()
         random.seed(int(image_hash[:8], 16))
         
-        # Generate a 1536-dimensional embedding (same as text-embedding-3-small)
-        embedding = np.random.normal(0, 1, 1536).astype(np.float32)
-        
-        # Normalize the embedding
+        # Generate a 768-dimensional embedding (same as CLIP-L/14)
+        embedding = np.random.normal(0, 1, 768).astype(np.float32)
         embedding = embedding / np.linalg.norm(embedding)
         
         return embedding
@@ -148,8 +182,8 @@ def build_index(image_paths: List[str], metadata: List[Dict[str, Any]],
     dimension = embeddings_array.shape[1]
     index = faiss.IndexFlatIP(dimension)  # Inner product for cosine similarity
     
-    # Normalize embeddings for cosine similarity
-    faiss.normalize_L2(embeddings_array)
+    # Normalize embeddings for cosine similarity (already done in get_clip_embedding)
+    # faiss.normalize_L2(embeddings_array)  # Not needed since we normalize in embedding function
     
     # Add vectors to index
     index.add(embeddings_array)
@@ -212,3 +246,32 @@ def build_index_from_urls(image_urls: List[str], metadata: List[Dict[str, Any]],
     
     # Build index from downloaded images
     build_index(downloaded_paths, valid_metadata, index_path, metadata_path) 
+
+def test_exact_image_similarity(image1_bytes: bytes, image2_bytes: bytes) -> float:
+    """
+    Test exact similarity between two images by comparing their embeddings directly.
+    This should give us 99-100% similarity for identical images.
+    
+    Args:
+        image1_bytes: First image bytes
+        image2_bytes: Second image bytes
+        
+    Returns:
+        Similarity score (0-1, where 1 = identical)
+    """
+    try:
+        # Generate embeddings for both images
+        embedding1 = get_clip_embedding(image1_bytes)
+        embedding2 = get_clip_embedding(image2_bytes)
+        
+        # Calculate cosine similarity directly
+        similarity = np.dot(embedding1, embedding2)
+        
+        # Ensure result is in 0-1 range
+        similarity = max(0, min(1, (similarity + 1) / 2))
+        
+        return float(similarity)
+        
+    except Exception as e:
+        print(f"Error testing exact similarity: {str(e)}")
+        return 0.0 

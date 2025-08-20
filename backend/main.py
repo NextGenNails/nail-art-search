@@ -71,9 +71,13 @@ async def match_image(file: UploadFile = File(...)) -> List[Dict[str, Any]]:
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid image file")
         
-        # Get CLIP embedding
+        # Get CLIP-L/14 embedding
         try:
             query_embedding = get_clip_embedding(image_bytes)
+            # Ensure embedding is normalized for cosine similarity
+            embedding_norm = np.linalg.norm(query_embedding)
+            if embedding_norm > 0:
+                query_embedding = query_embedding / embedding_norm
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to generate embedding: {str(e)}")
         
