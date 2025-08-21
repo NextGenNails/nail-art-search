@@ -2,11 +2,14 @@ import { useState, useRef } from 'react'
 import Head from 'next/head'
 
 interface SearchResult {
-  url: string
+  id: string
   score: number
-  booking_link: string
-  title: string
-  artist: string
+  filename: string
+  style: string
+  colors: string
+  image_url: string | null
+  local_path: string
+  metadata: any
 }
 
 export default function UploadPage() {
@@ -55,7 +58,9 @@ export default function UploadPage() {
       }
 
       const data = await response.json()
-      setResults(data)
+      console.log('Received data:', data)
+      console.log('Results array:', data.results)
+      setResults(data.results || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -178,14 +183,21 @@ export default function UploadPage() {
                     <div key={index} className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                       <div className="aspect-square bg-gray-200 relative">
                         <img
-                          src={result.url}
-                          alt={result.title}
+                          src={result.image_url || undefined}
+                          alt={result.filename}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement
-                            target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg=='
+                            target.style.display = 'none'
+                            target.nextElementSibling?.classList.remove('hidden')
                           }}
                         />
+                        <div className={`w-full h-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center ${result.image_url ? 'hidden' : ''}`}>
+                          <div className="text-center">
+                            <div className="text-4xl mb-2">💅</div>
+                            <div className="text-sm text-gray-600">Nail Art</div>
+                          </div>
+                        </div>
                         <div className="absolute top-2 right-2 bg-pink-600 text-white px-2 py-1 rounded text-sm font-medium">
                           {Math.round(result.score * 100)}%
                         </div>
@@ -193,22 +205,18 @@ export default function UploadPage() {
                       
                       <div className="p-4">
                         <h3 className="font-medium text-gray-900 mb-1 truncate">
-                          {result.title}
+                          {result.filename}
                         </h3>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Style: {result.style}
+                        </p>
                         <p className="text-sm text-gray-600 mb-3">
-                          by {result.artist}
+                          Colors: {result.colors}
                         </p>
                         
-                        {result.booking_link && (
-                          <a
-                            href={result.booking_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block w-full bg-pink-600 text-white text-center py-2 px-4 rounded-lg hover:bg-pink-700 transition-colors text-sm font-medium"
-                          >
-                            Book Appointment
-                          </a>
-                        )}
+                        <div className="text-xs text-gray-500">
+                          ID: {result.id}
+                        </div>
                       </div>
                     </div>
                   ))}

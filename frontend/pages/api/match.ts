@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import formidable, { Part } from 'formidable'
+import formidable from 'formidable'
 import fs from 'fs'
 
 export const config = {
@@ -19,15 +19,17 @@ export default async function handler(
   try {
     const form = formidable({
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
-      filter: (part: Part) => {
-        return part.mimetype?.includes('image') || false
-      },
+      keepExtensions: true,
     })
 
     const [fields, files] = await form.parse(req)
+    console.log('Parsed files:', files)
+    console.log('Fields:', fields)
+    
     const file = files.file?.[0]
 
     if (!file) {
+      console.error('No file found in request')
       return res.status(400).json({ error: 'No image file provided' })
     }
 
@@ -39,7 +41,7 @@ export default async function handler(
     formData.append('file', new Blob([imageBuffer], { type: file.mimetype || 'image/jpeg' }), file.originalFilename || 'image.jpg')
 
     // Send to FastAPI backend
-    const backendResponse = await fetch('http://localhost:8000/match', {
+    const backendResponse = await fetch('http://localhost:8000/search', {
       method: 'POST',
       body: formData,
     })

@@ -18,7 +18,7 @@ run-frontend:
 # Run the backend
 run-backend:
 	@echo "Starting FastAPI backend..."
-	cd backend && export OPENAI_API_KEY="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" && poetry run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+	cd backend && source setup_env.sh && poetry run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 # Setup vendor image collection system
 setup-collection:
@@ -33,7 +33,7 @@ scrape:
 # Scrape real Instagram data
 scrape-instagram:
 	@echo "Scraping real Instagram nail art data..."
-	cd data-pipeline && export INSTAGRAM_USERNAME="esteg21" && export INSTAGRAM_PASSWORD="02212004,eDg" && poetry run python instagram_scraper.py
+	cd data-pipeline && poetry run python instagram_scraper.py
 
 # Scrape real Unsplash nail art data
 scrape-unsplash:
