@@ -10,6 +10,9 @@ data-pipeline/*.pkl
 .env
 .env.local
 .env.production
+.env.*
+*.env
+.envrc
 
 # Dependencies
 node_modules/
@@ -43,4 +46,14 @@ yarn-error.log*
 .next/
 out/
 dist/
-build/ 
+build/
+
+# Security - API keys and credentials
+*api_key*
+*password*
+*secret*
+*token*
+*credential*
+setup_env.sh
+.env
+.envrc 
