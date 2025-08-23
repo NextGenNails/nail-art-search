@@ -6,7 +6,7 @@ Optimized for Railway's deployment environment.
 
 import os
 import logging
-from main_pinecone_simple import app
+from test_app import app
 
 # Configure logging for Railway
 logging.basicConfig(

@@ -12,35 +12,14 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Copy requirements first for better caching
-COPY backend/requirements-minimal.txt ./requirements.txt
+COPY backend/requirements-test.txt ./requirements.txt
 
-# Install Python dependencies with optimizations
-RUN pip install --no-cache-dir --no-deps \
-    fastapi==0.104.1 \
-    uvicorn[standard]==0.24.0 \
-    python-multipart==0.0.6 \
-    requests==2.31.0 \
-    pinecone-client==2.2.4 \
-    supabase==2.0.2 \
-    python-dotenv==1.0.0 \
-    && pip install --no-cache-dir \
-    numpy==1.24.3 \
-    scipy==1.11.4 \
-    && pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
-    torch==2.1.0+cpu \
-    && pip install --no-cache-dir \
-    transformers==4.35.0 \
-    && pip install --no-cache-dir \
-    pillow==10.1.0 \
-    opencv-python-headless==4.8.1.78
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy only essential backend code that exists
 COPY backend/railway_start.py .
-COPY backend/main_pinecone_simple.py .
-COPY backend/pinecone_client.py .
-COPY backend/enhanced_embed.py .
-COPY backend/enhanced_clip_embedding.py .
-COPY backend/nail_art_prompts.py .
+COPY backend/test_app.py .
 
 # Expose port
 EXPOSE 8000
