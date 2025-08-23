@@ -36,7 +36,7 @@ RUN pip install --no-cache-dir --no-deps \
 
 # Copy only essential backend code that exists
 COPY backend/railway_start.py .
-COPY backend/main_pinecone.py .
+COPY backend/main_pinecone_simple.py .
 COPY backend/pinecone_client.py .
 COPY backend/enhanced_embed.py .
 COPY backend/enhanced_clip_embedding.py .
