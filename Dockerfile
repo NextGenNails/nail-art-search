@@ -41,6 +41,11 @@ COPY backend/pinecone_client.py .
 COPY backend/enhanced_embed.py .
 COPY backend/enhanced_clip_embedding.py .
 COPY backend/nail_art_prompts.py .
+
+# Copy startup script
+COPY start.sh .
+RUN chmod +x start.sh
+
 COPY backend/ .
 
 # Expose port
@@ -56,4 +61,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Start the application
-CMD ["python", "railway_start.py"]
+CMD ["./start.sh"]
