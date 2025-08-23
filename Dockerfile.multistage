@@ -32,7 +32,9 @@ COPY --from=builder /root/.local /root/.local
 COPY backend/railway_start.py .
 COPY backend/main_pinecone.py .
 COPY backend/pinecone_client.py .
-COPY backend/embed.py .
+COPY backend/enhanced_embed.py .
+COPY backend/enhanced_clip_embedding.py .
+COPY backend/nail_art_prompts.py .
 
 # Set PATH to include user packages
 ENV PATH=/root/.local/bin:$PATH
