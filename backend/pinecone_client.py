@@ -94,15 +94,17 @@ class PineconeClient:
             logger.error(f"❌ Failed to store embedding for {image_id}: {e}")
             return False
     
-    def search_similar(self, query_embedding: List[float], top_k: int = 10, 
-                      filter_metadata: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        """Search for similar images."""
+    def search_similar(self, query_embedding: List[float], top_k: int = 20, 
+                      filter_metadata: Optional[Dict[str, Any]] = None,
+                      similarity_threshold: float = 0.7) -> List[Dict[str, Any]]:
+        """Search for similar images with enhanced filtering and scoring."""
         try:
-            # Prepare query
+            # Prepare query with enhanced parameters
             query_kwargs = {
                 "vector": query_embedding,
-                "top_k": top_k,
-                "include_metadata": True
+                "top_k": min(top_k * 2, 100),  # Get more results initially for filtering
+                "include_metadata": True,
+                "include_values": False  # Don't return vectors to save bandwidth
             }
             
             # Add filters if provided
@@ -112,17 +114,27 @@ class PineconeClient:
             # Perform search
             results = self.index.query(**query_kwargs)
             
-            # Process results
+            # Process and filter results by similarity threshold
             processed_results = []
             for match in results.matches:
-                result = {
-                    "id": match.id,
-                    "score": match.score,
-                    "metadata": match.metadata
-                }
-                processed_results.append(result)
+                # Apply similarity threshold
+                if match.score >= similarity_threshold:
+                    result = {
+                        "id": match.id,
+                        "score": match.score,
+                        "metadata": match.metadata
+                    }
+                    processed_results.append(result)
+                
+                # Stop if we have enough high-quality results
+                if len(processed_results) >= top_k:
+                    break
             
-            logger.info(f"✅ Found {len(processed_results)} similar images")
+            # Sort by score (highest first) and limit to top_k
+            processed_results.sort(key=lambda x: x["score"], reverse=True)
+            processed_results = processed_results[:top_k]
+            
+            logger.info(f"✅ Found {len(processed_results)} similar images (threshold: {similarity_threshold})")
             return processed_results
             
         except Exception as e:
