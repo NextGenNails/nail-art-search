@@ -108,7 +108,7 @@ export default async function handler(
       
     } catch (fetchError) {
       clearTimeout(timeoutId)
-      if (fetchError.name === 'AbortError') {
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
         throw new Error('Request to backend timed out after 30 seconds')
       }
       throw fetchError
