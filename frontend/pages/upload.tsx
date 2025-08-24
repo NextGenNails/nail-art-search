@@ -8,6 +8,13 @@ interface SearchResult {
   style: string
   colors: string
   image_url: string | null
+  // Vendor information (dummy data for now)
+  vendor_name: string
+  vendor_distance: string
+  vendor_website: string
+  booking_link: string
+  vendor_location: string
+  vendor_rating: string
   metadata: any
 }
 
@@ -18,6 +25,53 @@ export default function UploadPage() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Generate dummy vendor data for demonstration
+  const generateDummyVendorData = (index: number) => {
+    const vendors = [
+      {
+        vendor_name: "Nail Art Studio Pro",
+        vendor_distance: "2.3 miles",
+        vendor_website: "https://nailartstudiopro.com",
+        booking_link: "https://nailartstudiopro.com/book",
+        vendor_location: "123 Main St, Dallas, TX 75201",
+        vendor_rating: "4.8"
+      },
+      {
+        vendor_name: "Luxe Nail Bar",
+        vendor_distance: "1.8 miles",
+        vendor_website: "https://luxenailbar.com",
+        booking_link: "https://luxenailbar.com/appointments",
+        vendor_location: "456 Oak Ave, Dallas, TX 75202",
+        vendor_rating: "4.6"
+      },
+      {
+        vendor_name: "Artistic Nails & Spa",
+        vendor_distance: "3.1 miles",
+        vendor_website: "https://artisticnailsspa.com",
+        booking_link: "https://artisticnailsspa.com/book-now",
+        vendor_location: "789 Pine St, Dallas, TX 75203",
+        vendor_rating: "4.9"
+      },
+      {
+        vendor_name: "Modern Nail Studio",
+        vendor_distance: "2.7 miles",
+        vendor_website: "https://modernnailstudio.com",
+        booking_link: "https://modernnailstudio.com/schedule",
+        vendor_location: "321 Elm St, Dallas, TX 75204",
+        vendor_rating: "4.7"
+      },
+      {
+        vendor_name: "Glitz & Glam Nails",
+        vendor_distance: "1.2 miles",
+        vendor_website: "https://glitzglamnails.com",
+        booking_link: "https://glitzglamnails.com/book",
+        vendor_location: "654 Maple Ave, Dallas, TX 75205",
+        vendor_rating: "4.5"
+      }
+    ]
+    return vendors[index % vendors.length]
+  }
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -59,7 +113,14 @@ export default function UploadPage() {
       const data = await response.json()
       console.log('Received data:', data)
       console.log('Results array:', data.results)
-      setResults(data.results || [])
+      
+      // Add dummy vendor data to each result for demonstration
+      const resultsWithVendors = (data.results || []).map((result: any, index: number) => ({
+        ...result,
+        ...generateDummyVendorData(index)
+      }))
+      
+      setResults(resultsWithVendors)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -206,6 +267,55 @@ export default function UploadPage() {
                         <h3 className="font-medium text-gray-900 mb-1 truncate">
                           {result.filename}
                         </h3>
+                        
+                        {/* Vendor Information */}
+                        <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-blue-900 text-sm">
+                              {result.vendor_name || 'Vendor Info'}
+                            </h4>
+                            {result.vendor_rating && (
+                              <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                ⭐ {result.vendor_rating}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {result.vendor_location && (
+                            <p className="text-xs text-blue-700 mb-1">
+                              📍 {result.vendor_location}
+                            </p>
+                          )}
+                          
+                          {result.vendor_distance && (
+                            <p className="text-xs text-blue-700 mb-2">
+                              🚗 {result.vendor_distance}
+                            </p>
+                          )}
+                          
+                          <div className="flex gap-2">
+                            {result.vendor_website && (
+                              <a
+                                href={result.vendor_website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium hover:bg-blue-700 transition-colors flex-1 text-center"
+                              >
+                                🌐 Website
+                              </a>
+                            )}
+                            {result.booking_link && (
+                              <a
+                                href={result.booking_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors flex-1 text-center"
+                              >
+                                📅 Book Now
+                              </a>
+                            )}
+                          </div>
+                        </div>
                         
                         <p className="text-sm text-gray-600 mb-2">
                           Style: {result.style}
