@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 
 interface NailTech {
   id: string
@@ -10,13 +11,23 @@ interface NailTech {
   image: string
 }
 
+interface SearchResult {
+  filename: string
+  similarity: number
+  vendor?: string
+  image_url?: string
+}
+
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [showResults, setShowResults] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   // Mock nail techs data - replace with real data later
   const mockNailTechs: NailTech[] = [
@@ -62,12 +73,50 @@ export default function Home() {
     }
   ]
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const performSearch = async (file: File) => {
+    setIsLoading(true)
+    setShowResults(false)
+    
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/match', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Search failed')
+      }
+
+      const results = await response.json()
+      setSearchResults(results.matches || [])
+      setShowResults(true)
+      
+      // Scroll to carousel section to show results
+      setTimeout(() => {
+        document.getElementById('carousel')?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+      
+    } catch (error) {
+      console.error('Search error:', error)
+      alert('Failed to search for similar nail art. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       setSelectedFile(file)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      
+      // Automatically start the search after file selection
+      await performSearch(file)
     }
   }
 
@@ -75,13 +124,14 @@ export default function Home() {
     event.preventDefault()
   }
 
-  const handleDrop = (event: React.DragEvent) => {
+  const handleDrop = async (event: React.DragEvent) => {
     event.preventDefault()
     const file = event.dataTransfer.files?.[0]
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file)
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
+      await performSearch(file)
     }
   }
 
@@ -137,62 +187,99 @@ export default function Home() {
             <button
               onClick={handleFindNailTech}
               disabled={isLoading}
-              className="bg-black text-white py-4 px-8 rounded-full text-lg font-medium hover:bg-gray-800 transition-colors inline-flex items-center space-x-2 group"
+              className="bg-black text-white py-4 px-8 rounded-full text-lg font-medium hover:bg-gray-800 transition-colors inline-flex items-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>Find a nail tech</span>
-              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              {isLoading ? (
+                <>
+                  <span>Searching...</span>
+                  <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <span>Find a nail tech</span>
+                  <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </>
+              )}
             </button>
           </div>
 
           {/* Nails near you section */}
-          <div className="mt-32">
+          <div id="carousel" className="mt-32">
             <h2 className="text-3xl font-medium text-black mb-4 pp-eiko">
-              Nails near you:
+              {showResults ? "Results:" : "Nails near you:"}
             </h2>
             
             <div className="py-8">
               <div ref={carouselRef} className="flex space-x-6 overflow-x-auto pb-4 pt-4 scroll-smooth">
-                {mockNailTechs.map((tech) => (
-                  <div
-                    key={tech.id}
-                    className="flex-none w-80 bg-black rounded-2xl overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-                  >
-                    <div className="relative h-80">
-                      <img
-                        src={tech.image}
-                        alt={tech.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-1">
-                        <span>★</span>
-                        <span>{tech.rating}</span>
+                {(showResults && searchResults.length > 0 ? searchResults : mockNailTechs).map((item, index) => {
+                  // Handle search results vs mock data
+                  const isSearchResult = showResults && 'similarity' in item;
+                  const displayData = isSearchResult ? {
+                    id: index.toString(),
+                    name: item.vendor || 'Unknown Artist',
+                    image: item.image_url || `/api/image/${item.filename}`,
+                    rating: `${Math.round(item.similarity * 100)}%`,
+                    distance: '',
+                    location: item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''
+                  } : item;
+
+                  return (
+                    <div
+                      key={displayData.id}
+                      className="flex-none w-80 bg-black rounded-2xl overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+                    >
+                      <div className="relative h-80">
+                        <img
+                          src={displayData.image}
+                          alt={isSearchResult ? `Similar nail design ${index + 1}` : displayData.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to placeholder if image fails to load
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center'
+                          }}
+                        />
+                        <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-1">
+                          {isSearchResult ? (
+                            <span>{displayData.rating} match</span>
+                          ) : (
+                            <>
+                              <span>★</span>
+                              <span>{displayData.rating}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="p-6 text-white">
+                        <h3 className="text-xl font-bold mb-2">{displayData.name}</h3>
+                        <p className="text-gray-300 text-sm">
+                          {isSearchResult ? displayData.location : `${displayData.distance} | ${displayData.location}`}
+                        </p>
                       </div>
                     </div>
-                    <div className="p-6 text-white">
-                      <h3 className="text-xl font-bold mb-2">{tech.name}</h3>
-                      <p className="text-gray-300 text-sm">{tech.distance} | {tech.location}</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
               
               {/* Navigation arrows - moved below and aligned right */}
               <div className="flex justify-end space-x-2 mt-4">
                 <button 
                   onClick={() => scrollCarousel('left')}
-                  className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors"
+                  className="bg-black bg-opacity-10 shadow-lg rounded-full p-3 hover:bg-opacity-20 transition-all duration-200"
                 >
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button 
                   onClick={() => scrollCarousel('right')}
-                  className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors"
+                  className="bg-black bg-opacity-10 shadow-lg rounded-full p-3 hover:bg-opacity-20 transition-all duration-200"
                 >
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
