@@ -9,13 +9,21 @@ interface NailTech {
   location: string
   rating: string
   image: string
+  booking_link?: string
+  vendor_website?: string
 }
 
 interface SearchResult {
-  filename: string
-  similarity: number
+  id?: string
+  filename?: string
+  similarity?: number
+  score?: number
   vendor?: string
+  vendor_name?: string
   image_url?: string
+  image?: string
+  vendor_distance?: string
+  vendor_location?: string
 }
 
 export default function Home() {
@@ -92,7 +100,8 @@ export default function Home() {
       }
 
       const results = await response.json()
-      setSearchResults(results.matches || [])
+      console.log('🔍 Frontend received results:', results)
+      setSearchResults(results.results || results.matches || [])
       setShowResults(true)
       
       // Scroll to carousel section to show results
@@ -218,14 +227,14 @@ export default function Home() {
               <div ref={carouselRef} className="flex space-x-6 overflow-x-auto pb-4 pt-4 scroll-smooth">
                 {(showResults && searchResults.length > 0 ? searchResults : mockNailTechs).map((item, index) => {
                   // Handle search results vs mock data
-                  const isSearchResult = showResults && 'similarity' in item;
+                  const isSearchResult = showResults && ('similarity' in item || 'score' in item);
                   const displayData = isSearchResult ? {
-                    id: index.toString(),
-                    name: item.vendor || 'Unknown Artist',
-                    image: item.image_url || `/api/image/${item.filename}`,
-                    rating: `${Math.round(item.similarity * 100)}%`,
-                    distance: '',
-                    location: item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''
+                    id: item.id || index.toString(),
+                    name: item.vendor_name || item.vendor || 'Unknown Artist',
+                    image: item.image || item.image_url || `/api/image/${item.filename}`,
+                    rating: item.score ? `${Math.round(item.score * 100)}%` : (item.similarity ? `${Math.round(item.similarity * 100)}%` : 'N/A'),
+                    distance: item.vendor_distance || '',
+                    location: item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : '')
                   } : item;
 
                   return (
