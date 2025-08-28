@@ -321,19 +321,19 @@ export default function Home() {
                       </div>
                       
                       {/* Content layout matching reference */}
-                      <div className="relative">
+                      <div className="relative flex flex-col h-32">
                         {/* Name */}
                         <div className="flex justify-between items-start mb-1">
                           <h3 className="text-xl font-medium text-white pp-eiko">{displayData.name}</h3>
                         </div>
                         
                         {/* Distance and location */}
-                        <p className="text-gray-300 text-sm mb-4">
+                        <p className="text-gray-300 text-sm mb-4 flex-1">
                           {displayData.distance} | {displayData.location}
                         </p>
                         
                         {/* Buttons - bottom right, horizontal */}
-                        <div className="flex justify-end items-center space-x-2">
+                        <div className="flex justify-end items-center space-x-2 mt-auto">
                           <button 
                             className="bg-gray-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors h-9"
                             onClick={(e) => {
