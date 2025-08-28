@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
@@ -11,6 +11,8 @@ interface NailTech {
   image: string
   booking_link?: string
   vendor_website?: string
+  address?: string
+  website?: string
 }
 
 interface SearchResult {
@@ -33,6 +35,7 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -45,41 +48,75 @@ export default function Home() {
       distance: '1.6 mi away',
       location: 'Richardson, TX',
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=400&h=400&fit=crop&crop=center'
+      image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=400&h=400&fit=crop&crop=center',
+      address: '123 Main St, Richardson, TX 75081',
+      website: 'https://marissanails.com'
     },
     {
       id: '2', 
-      name: 'Jennifer',
+      name: 'Luxe Nails Spa',
       distance: '2.1 mi away',
       location: 'Plano, TX',
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400&h=400&fit=crop&crop=center'
+      image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400&h=400&fit=crop&crop=center',
+      address: '456 Oak Ave, Plano, TX 75024',
+      website: 'https://luxenailsspa.com'
     },
     {
       id: '3',
-      name: 'Jennifer',
-      distance: '2.1 mi away', 
-      location: 'Plano, TX',
-      rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center'
+      name: 'Bella Nails Studio',
+      distance: '2.8 mi away', 
+      location: 'Dallas, TX',
+      rating: '4.8',
+      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
+      address: '789 Elm St, Dallas, TX 75201',
+      website: 'https://bellanailsstudio.com'
     },
     {
       id: '4',
-      name: 'Jennifer',
-      distance: '2.1 mi away',
-      location: 'Plano, TX', 
-      rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1583847645687-4770c01bec81?w=400&h=400&fit=crop&crop=center'
+      name: 'Glamour Nails',
+      distance: '3.2 mi away',
+      location: 'Frisco, TX', 
+      rating: '4.7',
+      image: 'https://images.unsplash.com/photo-1583847645687-4770c01bec81?w=400&h=400&fit=crop&crop=center',
+      address: '321 Pine Dr, Frisco, TX 75034',
+      website: 'https://glamournails.com'
     },
     {
       id: '5',
-      name: 'Jennifer',
-      distance: '2.1 mi away',
-      location: 'Plano, TX',
+      name: 'Chic Nail Bar',
+      distance: '1.9 mi away',
+      location: 'Allen, TX',
       rating: '4.9', 
-      image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center'
+      image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center',
+      address: '567 Cedar Ln, Allen, TX 75013',
+      website: 'https://chicnailbar.com'
     }
   ]
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      // Don't close if clicking on the dropdown button or dropdown content
+      if (openDropdown && 
+          !target?.closest('.dropdown-container') && 
+          !target?.closest('.dropdown-button')) {
+        console.log('Closing dropdown due to outside click')
+        setOpenDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [openDropdown])
+
+  // Debug: Log dropdown state changes
+  useEffect(() => {
+    console.log('Dropdown state changed:', openDropdown)
+  }, [openDropdown])
 
   const performSearch = async (file: File) => {
     setIsLoading(true)
@@ -219,12 +256,26 @@ export default function Home() {
 
           {/* Nails near you section */}
           <div id="carousel" className="mt-32">
-            <h2 className="text-3xl font-medium text-black mb-4 pp-eiko">
+            {/* Display uploaded image when showing results */}
+            {showResults && previewUrl && (
+              <div className="mb-24 text-center">
+                <h3 className="text-xl font-medium text-gray-700 mb-6 pp-eiko">Your uploaded image:</h3>
+                <div className="flex justify-center">
+                  <img 
+                    src={previewUrl} 
+                    alt="Your uploaded nail art" 
+                    className="w-80 h-80 object-cover rounded-2xl shadow-lg"
+                  />
+                </div>
+              </div>
+            )}
+            
+            <h2 className="text-3xl font-medium text-black mb-4 pp-eiko text-center">
               {showResults ? "Results:" : "Nails near you:"}
             </h2>
             
             <div className="py-8">
-              <div ref={carouselRef} className="flex space-x-6 overflow-x-auto pb-4 pt-4 scroll-smooth">
+              <div ref={carouselRef} className="flex space-x-6 overflow-x-auto pb-4 pt-4 pl-4 scroll-smooth">
                 {(showResults && searchResults.length > 0 ? searchResults : mockNailTechs).map((item, index) => {
                   // Handle search results vs mock data
                   const isSearchResult = showResults && ('similarity' in item || 'score' in item);
@@ -234,25 +285,30 @@ export default function Home() {
                     image: item.image || item.image_url || `/api/image/${item.filename}`,
                     rating: item.score ? `${Math.round(item.score * 100)}%` : (item.similarity ? `${Math.round(item.similarity * 100)}%` : 'N/A'),
                     distance: item.vendor_distance || '',
-                    location: item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : '')
+                    location: item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''),
+                    address: item.address || `123 Main St, ${item.vendor_location || 'Dallas, TX'}`,
+                    website: item.website || item.vendor_website || `https://${(item.vendor_name || item.vendor || 'example').toLowerCase().replace(/\s+/g, '')}.com`,
+                    booking_link: item.booking_link
                   } : item;
 
                   return (
                     <div
                       key={displayData.id}
-                      className="flex-none w-80 bg-black rounded-2xl overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+                      className="flex-none w-80 bg-black rounded-2xl p-4 hover:scale-105 transition-all duration-300 relative"
                     >
-                      <div className="relative h-80">
+                      {/* Image with padding and rounded corners - square aspect ratio */}
+                      <div className="relative mb-4">
                         <img
                           src={displayData.image}
                           alt={isSearchResult ? `Similar nail design ${index + 1}` : displayData.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-72 object-cover rounded-xl"
                           onError={(e) => {
                             // Fallback to placeholder if image fails to load
                             e.currentTarget.src = 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center'
                           }}
                         />
-                        <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-1">
+                        {/* Star rating badge - ghosted */}
+                        <div className="absolute top-3 right-3 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm flex items-center space-x-1">
                           {isSearchResult ? (
                             <span>{displayData.rating} match</span>
                           ) : (
@@ -263,12 +319,79 @@ export default function Home() {
                           )}
                         </div>
                       </div>
-                      <div className="p-6 text-white">
-                        <h3 className="text-xl font-bold mb-2">{displayData.name}</h3>
-                        <p className="text-gray-300 text-sm">
-                          {isSearchResult ? displayData.location : `${displayData.distance} | ${displayData.location}`}
+                      
+                      {/* Content layout matching reference */}
+                      <div className="relative">
+                        {/* Name */}
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 className="text-xl font-medium text-white pp-eiko">{displayData.name}</h3>
+                        </div>
+                        
+                        {/* Distance and location */}
+                        <p className="text-gray-300 text-sm mb-4">
+                          {displayData.distance} | {displayData.location}
                         </p>
+                        
+                        {/* Buttons - bottom right, horizontal */}
+                        <div className="flex justify-end items-center space-x-2">
+                          <button 
+                            className="bg-gray-700 text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors h-9"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              // Handle booking
+                              if (displayData.booking_link || displayData.website) {
+                                window.open(displayData.booking_link || displayData.website, '_blank')
+                              }
+                            }}
+                          >
+                            Book
+                          </button>
+                          <button
+                            type="button"
+                            className="dropdown-button bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600 transition-colors h-9 w-9 flex items-center justify-center"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              console.log('Toggle dropdown for:', displayData.id)
+                              console.log('Current openDropdown:', openDropdown)
+                              const newState = openDropdown === displayData.id ? null : displayData.id
+                              console.log('Setting openDropdown to:', newState)
+                              setOpenDropdown(newState)
+                            }}
+                          >
+                            <svg 
+                              className={`w-4 h-4 transition-transform duration-200 ${
+                                openDropdown === displayData.id ? 'rotate-180' : ''
+                              }`} 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
+                      
+                      {/* Dropdown - Extended card section */}
+                      {openDropdown === displayData.id && (
+                        <div className="dropdown-container mt-4 pt-4 border-t border-gray-700">
+                          <div className="mb-3">
+                            <p className="text-sm text-gray-400 mb-1">Address:</p>
+                            <p className="text-sm font-medium text-white">{displayData.address || `123 Main St, ${displayData.location}`}</p>
+                          </div>
+                          <button 
+                            className="w-full bg-gray-700 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              const website = displayData.website || displayData.vendor_website || `https://${displayData.name.toLowerCase().replace(/\s+/g, '')}.com`
+                              window.open(website, '_blank')
+                            }}
+                          >
+                            Website
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
