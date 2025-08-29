@@ -26,6 +26,10 @@ interface SearchResult {
   image?: string
   vendor_distance?: string
   vendor_location?: string
+  address?: string
+  website?: string
+  vendor_website?: string
+  booking_link?: string
 }
 
 export default function Home() {
