@@ -30,6 +30,10 @@ interface SearchResult {
   website?: string
   vendor_website?: string
   booking_link?: string
+  name?: string
+  distance?: string
+  location?: string
+  rating?: string
 }
 
 export default function Home() {
