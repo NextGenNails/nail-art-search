@@ -362,7 +362,7 @@ export default function Home() {
                               e.stopPropagation()
                               console.log('Toggle dropdown for:', displayData.id)
                               console.log('Current openDropdown:', openDropdown)
-                              const newState = openDropdown === displayData.id ? null : displayData.id
+                              const newState = openDropdown === displayData.id ? null : (displayData.id || null)
                               console.log('Setting openDropdown to:', newState)
                               setOpenDropdown(newState)
                             }}
