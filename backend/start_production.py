@@ -6,7 +6,7 @@ Optimized for cloud deployment with environment variable configuration.
 
 import os
 import logging
-from main_pinecone import app
+from main import app
 
 # Configure logging for production
 logging.basicConfig(
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     
     # Production settings
     uvicorn.run(
-        "main_pinecone:app",
+        "main:app",
         host=host,
         port=port,
         workers=1,  # Single worker for memory efficiency
