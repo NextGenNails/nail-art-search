@@ -392,7 +392,7 @@ export default function Home() {
                             className="w-full bg-gray-700 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation()
-                              const website = displayData.website || displayData.vendor_website || `https://${displayData.name.toLowerCase().replace(/\s+/g, '')}.com`
+                              const website = displayData.website || displayData.vendor_website || `https://${(displayData.name || 'example').toLowerCase().replace(/\s+/g, '')}.com`
                               window.open(website, '_blank')
                             }}
                           >
