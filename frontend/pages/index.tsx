@@ -197,7 +197,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Nail&apos;d - Find Your Perfect Nail Tech</title>
+        <title>Nail&apos;d - Find Your Perfect Nail Tech v2</title>
         <meta name="description" content="Find nail techs near you with similar work" />
         <link rel="icon" href="/favicon.ico" />
 
