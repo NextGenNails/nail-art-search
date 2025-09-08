@@ -26,3 +26,7 @@
   font-family: 'PP Eiko', 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   font-feature-settings: 'kern' 1, 'liga' 1;
 }
+
+.font-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}

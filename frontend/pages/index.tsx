@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 interface NailTech {
@@ -212,7 +213,16 @@ export default function Home() {
       </Head>
 
       <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
-        <div className="container mx-auto px-6 sm:px-12 md:px-16 lg:px-24 pt-12 sm:pt-16 md:pt-20 lg:pt-24 pb-12">
+        {/* Navigation */}
+        <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
+          <div className="flex justify-end">
+            <Link href="/onboarding" className="text-black hover:text-gray-600 transition-colors pp-eiko text-lg">
+              Onboarding
+            </Link>
+          </div>
+        </nav>
+        
+        <div className="container mx-auto px-6 sm:px-12 md:px-16 lg:px-24 pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-12">
           <div className="text-center max-w-4xl mx-auto">
             <button 
               onClick={() => document.getElementById('giveaway')?.scrollIntoView({ behavior: 'smooth' })}
