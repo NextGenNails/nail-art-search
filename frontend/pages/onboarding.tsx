@@ -123,16 +123,32 @@ export default function Onboarding() {
 
               {/* Apply Section */}
               <div className="text-center">
-                <h3 className="text-2xl font-medium text-black mb-8 pp-eiko flex items-center justify-center">
-                  <span className="mr-2">💫</span>
-                  Apply to Be a Featured Tech:
-                </h3>
+                <a 
+                  href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSemOSo_bHNsNIrRGnyu7RuK4hHY6-7tKClHGwEy6xirEGLycA/viewform?usp=header&pli=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center hover:text-gray-600 transition-colors cursor-pointer"
+                >
+                  <h3 className="text-2xl font-medium text-black mb-8 pp-eiko flex items-center justify-center">
+                    <span className="mr-2">💫</span>
+                    Apply to Be a Featured Tech:
+                  </h3>
+                </a>
                 
-                {/* QR Code Placeholder */}
+                {/* QR Code */}
                 <div className="flex justify-center mb-8">
-                  <div className="w-48 h-48 bg-white border-2 border-black flex items-center justify-center">
-                    <div className="w-40 h-40 bg-black"></div>
-                  </div>
+                  <a 
+                    href="https://docs.google.com/forms/u/0/d/e/1FAIpQLSemOSo_bHNsNIrRGnyu7RuK4hHY6-7tKClHGwEy6xirEGLycA/viewform?usp=header&pli=1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block hover:opacity-80 transition-opacity cursor-pointer"
+                  >
+                    <img 
+                      src="/onboarding-qr.png" 
+                      alt="QR Code to apply as featured tech"
+                      className="w-48 h-48 border-2 border-gray-300 rounded-lg"
+                    />
+                  </a>
                 </div>
                 
                 <p className="text-sm text-gray-600 font-inter">
