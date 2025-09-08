@@ -215,7 +215,7 @@ export default function Home() {
       <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
         {/* Navigation */}
         <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Link href="/onboarding" className="text-black hover:text-gray-600 transition-colors pp-eiko text-lg">
               Onboarding
             </Link>
