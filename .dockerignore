@@ -17,9 +17,6 @@ node_modules/
 # Data pipeline (not needed for backend)
 data-pipeline/
 
-# Embeddings (not needed for backend)
-embeddings/
-
 # Scripts and utilities
 *.sh
 Makefile
