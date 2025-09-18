@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 # Add embeddings to path
 sys.path.append('../embeddings')
-from embed import get_clip_embedding
+from enhanced_embed import get_clip_embedding
 from pinecone_client import create_pinecone_client
 
 def upload_embeddings_to_pinecone():

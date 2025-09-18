@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.append('../embeddings')
 
-from embed import build_index
+from enhanced_embed import build_index
 import requests
 from PIL import Image
 import io

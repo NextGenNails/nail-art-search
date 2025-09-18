@@ -7,7 +7,6 @@ This script helps you upload the large model files separately after code deploym
 import os
 import sys
 import zipfile
-import requests
 from pathlib import Path
 
 def create_model_zip():

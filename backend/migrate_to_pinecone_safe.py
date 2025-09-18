@@ -57,7 +57,7 @@ def generate_embeddings_batch(metadata_batch: List[Dict[str, Any]], batch_num: i
     
     try:
         # Import here to avoid memory issues
-        from embed import get_clip_embedding
+        from enhanced_embed import get_clip_embedding
         
         embeddings_data = []
         

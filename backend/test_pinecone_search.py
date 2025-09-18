@@ -22,7 +22,7 @@ def test_pinecone_search():
     try:
         # Import required modules
         sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
-        from embed import get_clip_embedding
+        from enhanced_embed import get_clip_embedding
         from pinecone_client import create_pinecone_client
         
         # Get API key

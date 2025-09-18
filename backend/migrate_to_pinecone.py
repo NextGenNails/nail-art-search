@@ -31,7 +31,7 @@ def load_existing_data():
         import sys
         sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
         from query import load_index, vector_search
-        from embed import get_clip_embedding
+        from enhanced_embed import get_clip_embedding
         
         # Load index
         backend_dir = Path(__file__).parent
@@ -64,7 +64,7 @@ def generate_fresh_embeddings(metadata: List[Dict[str, Any]]) -> List[Dict[str, 
     try:
         import sys
         sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
-        from embed import get_clip_embedding
+        from enhanced_embed import get_clip_embedding
         import numpy as np
         
         embeddings_data = []
@@ -157,7 +157,7 @@ def verify_migration(api_key: str, test_image_path: str) -> bool:
     try:
         import sys
         sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
-        from embed import get_clip_embedding
+        from enhanced_embed import get_clip_embedding
         from pinecone_client import create_pinecone_client
         
         # Generate test embedding

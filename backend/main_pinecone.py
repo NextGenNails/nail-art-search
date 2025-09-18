@@ -36,8 +36,7 @@ from pathlib import Path
 
 # Import our modules
 from pinecone_client import create_pinecone_client
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'embeddings'))
-from embed import get_clip_embedding
+from enhanced_embed import get_clip_embedding
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

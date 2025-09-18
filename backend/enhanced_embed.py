@@ -12,7 +12,7 @@ import time
 import logging
 import platform
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +189,56 @@ def preprocess_image_consistently(image_bytes: bytes) -> bytes:
         elapsed = time.time() - start_time
         logger.error(f"❌ Image preprocessing failed after {elapsed:.2f}s: {e}")
         return image_bytes
+
+def build_index(image_paths: List[str], metadata: List[Dict[str, Any]], 
+                index_path: str = "nail_art_index.faiss", 
+                metadata_path: str = "nail_art_metadata.pkl") -> None:
+    """Build FAISS index from image paths and metadata."""
+    import faiss
+    import pickle
+    
+    embeddings = []
+    valid_metadata = []
+    
+    print(f"Processing {len(image_paths)} images...")
+    
+    for i, (image_path, meta) in enumerate(zip(image_paths, metadata)):
+        try:
+            # Read image file
+            with open(image_path, 'rb') as f:
+                image_bytes = f.read()
+            
+            # Generate embedding using your trained model
+            embedding = get_clip_embedding(image_bytes)
+            embeddings.append(embedding)
+            valid_metadata.append(meta)
+            
+            if (i + 1) % 10 == 0:
+                print(f"Processed {i + 1}/{len(image_paths)} images")
+                
+        except Exception as e:
+            print(f"Failed to process {image_path}: {str(e)}")
+            continue
+    
+    if not embeddings:
+        raise Exception("No valid embeddings generated")
+    
+    # Convert to numpy array
+    embeddings_array = np.array(embeddings, dtype=np.float32)
+    
+    # Build FAISS index
+    dimension = embeddings_array.shape[1]
+    index = faiss.IndexFlatIP(dimension)  # Inner product for cosine similarity
+    
+    # Add vectors to index
+    index.add(embeddings_array)
+    
+    # Save index and metadata
+    faiss.write_index(index, index_path)
+    
+    with open(metadata_path, 'wb') as f:
+        pickle.dump(valid_metadata, f)
+    
+    print(f"Built index with {len(embeddings)} vectors")
+    print(f"Index saved to {index_path}")
+    print(f"Metadata saved to {metadata_path}")
