@@ -1,0 +1,40 @@
+# Robots.txt for Nail'd - AI-Powered Nail Art Search
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://naild.app/sitemap.xml
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Allow all search engines to access main content
+Allow: /
+Allow: /onboarding
+Allow: /upload
+Allow: /api/
+
+# Disallow admin or sensitive areas (if any)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Allow social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Google-specific optimizations
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /

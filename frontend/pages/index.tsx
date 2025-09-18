@@ -206,10 +206,97 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Nail&apos;d - Find Your Perfect Nail Tech v2</title>
-        <meta name="description" content="Find nail techs near you with similar work" />
-        <link rel="icon" href="/favicon.ico" />
-
+        {/* Primary Meta Tags */}
+        <title>Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech</title>
+        <meta name="title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <meta name="description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art in Dallas, TX and beyond." />
+        <meta name="keywords" content="nail art search, nail tech finder, nail salon near me, nail design, manicure, nail artist, Dallas nail salon, AI nail search, nail inspiration, custom nails" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://naild.app/" />
+        <meta property="og:title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <meta property="og:description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art." />
+        <meta property="og:image" content="https://naild.app/og-image.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Nail'd" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://naild.app/" />
+        <meta property="twitter:title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <meta property="twitter:description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art." />
+        <meta property="twitter:image" content="https://naild.app/og-image.jpg" />
+        <meta property="twitter:creator" content="@naild_app" />
+        
+        {/* Additional SEO */}
+        <meta name="application-name" content="Nail'd" />
+        <meta name="apple-mobile-web-app-title" content="Nail'd" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        
+        {/* Schema.org structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Nail'd",
+              "url": "https://naild.app",
+              "description": "AI-powered nail art search platform to find nail technicians who can recreate your dream nail designs",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "All",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "creator": {
+                "@type": "Organization",
+                "name": "Nail'd",
+                "url": "https://naild.app"
+              }
+            })
+          }}
+        />
+        
+        {/* Local Business Schema for nail salons */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": "Nail'd - Nail Tech Directory",
+              "description": "Find the best nail technicians and salons in your area",
+              "url": "https://naild.app",
+              "telephone": "+1-555-NAILD",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Dallas",
+                "addressRegion": "TX",
+                "addressCountry": "US"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "32.7767",
+                "longitude": "-96.7970"
+              },
+              "sameAs": [
+                "https://instagram.com/naild_app",
+                "https://twitter.com/naild_app"
+              ]
+            })
+          }}
+        />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://naild.app/" />
       </Head>
 
       <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>

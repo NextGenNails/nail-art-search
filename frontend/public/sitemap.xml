@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://naild.app/</loc>
+    <lastmod>2025-01-17</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://naild.app/og-image.jpg</image:loc>
+      <image:title>Nail'd - AI-Powered Nail Art Search</image:title>
+      <image:caption>Find your perfect nail tech with AI-powered visual search</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Onboarding Page -->
+  <url>
+    <loc>https://naild.app/onboarding</loc>
+    <lastmod>2025-01-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Upload Page -->
+  <url>
+    <loc>https://naild.app/upload</loc>
+    <lastmod>2025-01-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- API Documentation (if public) -->
+  <url>
+    <loc>https://naild.app/api</loc>
+    <lastmod>2025-01-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>
