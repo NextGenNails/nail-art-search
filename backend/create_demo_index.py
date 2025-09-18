@@ -19,7 +19,7 @@ def download_sample_images():
     # Sample nail art images from Unsplash
     sample_images = [
         {
-            "url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center",
+            "url": "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center",
             "filename": "nail_art_1.jpg",
             "vendor": "Demo Artist 1"
         },
