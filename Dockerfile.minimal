@@ -37,8 +37,9 @@ RUN pip install --no-cache-dir --no-deps \
 # Copy all backend code
 COPY backend/ .
 
-# Copy the trained model
-COPY models/ ./models/
+# Create models directory and copy trained model if it exists
+RUN mkdir -p ./models
+# Note: Models will be uploaded separately via Railway dashboard or CLI
 
 # Expose port
 EXPOSE 8000
