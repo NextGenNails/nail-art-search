@@ -31,7 +31,6 @@ import uvicorn
 from PIL import Image
 import io
 import numpy as np
-import os
 from pathlib import Path
 
 # Import our modules
