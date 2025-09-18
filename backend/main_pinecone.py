@@ -193,14 +193,14 @@ async def health_check():
 @app.post("/search")
 async def search_similar_images(
     file: UploadFile = File(...),
-    top_k: int = int(os.getenv("DEFAULT_TOP_K", "20"))  # Default to 20 images
+    use_enhanced: bool = True  # Enable enhanced search by default
 ):
-    """Search for similar nail art images."""
+    """Search for similar nail art images with optional color histogram enhancement."""
     if not _index_loaded:
         raise HTTPException(status_code=503, detail="Pinecone index not loaded")
     
     try:
-        logger.info(f"🔍 Processing search request for {file.filename}")
+        logger.info(f"🔍 Processing search request for {file.filename} (enhanced={use_enhanced})")
         
         # Read and validate image
         image_bytes = await file.read()
@@ -214,65 +214,110 @@ async def search_similar_images(
         except Exception:
             raise HTTPException(status_code=400, detail="Invalid image format")
         
-        # Generate CLIP embedding
-        logger.info("🤖 Generating CLIP embedding...")
-        try:
-            embedding = get_clip_embedding(image_bytes)
-            if embedding is None:
-                raise ValueError("CLIP embedding generation returned None")
-            logger.info(f"✅ Generated embedding with shape: {embedding.shape}")
-        except Exception as e:
-            logger.error(f"❌ CLIP embedding failed: {e}")
-            raise HTTPException(status_code=500, detail=f"CLIP embedding failed: {str(e)}")
+        if use_enhanced:
+            # Use enhanced search with color histogram reranking
+            logger.info("🌈 Using enhanced search with color histogram reranking")
+            from enhanced_search import enhanced_similarity_search
+            
+            search_result = enhanced_similarity_search(image_bytes)
+            
+            if search_result.get("error"):
+                logger.error(f"❌ Enhanced search failed: {search_result['error']}")
+                # Fallback to standard search
+                use_enhanced = False
+            else:
+                # Return enhanced results
+                formatted_results = []
+                for result in search_result.get("results", []):
+                    formatted_result = {
+                        "id": result["id"],
+                        "filename": result["metadata"].get("filename", ""),
+                        "image_url": result.get("image_url", ""),
+                        "vendor_name": result.get("vendor_name", "Unknown Artist"),
+                        "style": result.get("style", "Unknown"),
+                        "colors": result.get("colors", "Unknown"),
+                        "similarity": result["scores"]["vector_similarity"],
+                        "color_similarity": result["scores"]["color_similarity"],
+                        "weighted_score": result["final_score"],
+                        "score": result["final_score"]  # For compatibility
+                    }
+                    formatted_results.append(formatted_result)
+                
+                return {
+                    "results": formatted_results,
+                    "search_type": "enhanced",
+                    "stats": search_result.get("stats", {}),
+                    "message": search_result.get("message", "")
+                }
         
-        # Search Pinecone for similar images with enhanced filtering
-        logger.info(f"🔍 Searching for top {top_k} similar images...")
-        similarity_threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.7"))
-        results = pinecone_client.search_similar(
-            embedding.tolist(), 
-            top_k=top_k,
-            similarity_threshold=similarity_threshold
-        )
-        
-        # Format results
-        formatted_results = []
-        for result in results:
-            # Get Supabase image URL from metadata
-            filename = result["metadata"].get("filename", "")
-            image_url = None
+        if not use_enhanced:
+            # Fallback to standard vector-only search
+            logger.info("🔍 Using standard vector-only search")
             
-            if filename:
-                # Generate Supabase public URL
-                image_url = f"https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/{filename}"
+            # Generate CLIP embedding
+            logger.info("🤖 Generating CLIP embedding...")
+            try:
+                from enhanced_embed import get_clip_embedding
+                embedding = get_clip_embedding(image_bytes)
+                if embedding is None:
+                    raise ValueError("CLIP embedding generation returned None")
+                logger.info(f"✅ Generated embedding with shape: {embedding.shape}")
+            except Exception as e:
+                logger.error(f"❌ CLIP embedding failed: {e}")
+                raise HTTPException(status_code=500, detail=f"CLIP embedding failed: {str(e)}")
             
-            # Determine vendor based on filename or style
-            vendor_info = get_vendor_for_image(filename, result["metadata"].get("style", ""))
+            # Search Pinecone for similar images
+            logger.info(f"🔍 Searching for similar images...")
+            from search_config import get_search_config
+            config = get_search_config()
             
-            formatted_result = {
-                "id": result["id"],
-                "score": float(result["score"]),
-                "filename": result["metadata"].get("filename", "Unknown"),
-                "style": result["metadata"].get("style", "Unknown"),
-                "colors": result["metadata"].get("colors", "Unknown"),
-                "image_url": image_url,
-                # Vendor information (from metadata or determined dynamically)
-                "vendor_name": result["metadata"].get("vendor_name", vendor_info["vendor_name"]),
-                "vendor_distance": result["metadata"].get("vendor_distance", vendor_info["vendor_distance"]),
-                "vendor_website": result["metadata"].get("vendor_website", vendor_info["vendor_website"]),
-                "booking_link": result["metadata"].get("booking_link", vendor_info["booking_link"]),
-                "vendor_location": result["metadata"].get("vendor_location", vendor_info["vendor_location"]),
-                "vendor_rating": result["metadata"].get("vendor_rating", vendor_info["vendor_rating"]),
-                "metadata": result["metadata"]
+            results = pinecone_client.search_similar(
+                embedding.tolist(), 
+                top_k=config.final_top_k,
+                similarity_threshold=config.similarity_threshold
+            )
+            
+            # Format results
+            formatted_results = []
+            for result in results:
+                # Get Supabase image URL from metadata
+                filename = result["metadata"].get("filename", "")
+                image_url = None
+                
+                if filename:
+                    # Generate Supabase public URL
+                    image_url = f"https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/{filename}"
+                
+                # Determine vendor based on filename or style
+                vendor_info = get_vendor_for_image(filename, result["metadata"].get("style", ""))
+                
+                formatted_result = {
+                    "id": result["id"],
+                    "score": float(result["score"]),
+                    "similarity": float(result["score"]),  # For compatibility
+                    "filename": result["metadata"].get("filename", "Unknown"),
+                    "style": result["metadata"].get("style", "Unknown"),
+                    "colors": result["metadata"].get("colors", "Unknown"),
+                    "image_url": image_url,
+                    # Vendor information (from metadata or determined dynamically)
+                    "vendor_name": result["metadata"].get("vendor_name", vendor_info["vendor_name"]),
+                    "vendor_distance": result["metadata"].get("vendor_distance", vendor_info["vendor_distance"]),
+                    "vendor_website": result["metadata"].get("vendor_website", vendor_info["vendor_website"]),
+                    "booking_link": result["metadata"].get("booking_link", vendor_info["booking_link"]),
+                    "vendor_location": result["metadata"].get("vendor_location", vendor_info["vendor_location"]),
+                    "vendor_rating": result["metadata"].get("vendor_rating", vendor_info["vendor_rating"]),
+                    "metadata": result["metadata"]
+                }
+                formatted_results.append(formatted_result)
+            
+            logger.info(f"✅ Found {len(formatted_results)} similar images (standard search)")
+            
+            return {
+                "query_image": file.filename,
+                "total_results": len(formatted_results),
+                "results": formatted_results,
+                "search_type": "standard"
             }
-            formatted_results.append(formatted_result)
-        
-        logger.info(f"✅ Found {len(formatted_results)} similar images")
-        
-        return {
-            "query_image": file.filename,
-            "total_results": len(formatted_results),
-            "results": formatted_results
-        }
         
     except HTTPException:
         # Re-raise HTTPExceptions (like validation errors)
