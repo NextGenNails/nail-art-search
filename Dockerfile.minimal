@@ -37,6 +37,9 @@ RUN pip install --no-cache-dir \
 # Copy all backend code
 COPY backend/ .
 
+# Copy embeddings directory
+COPY embeddings/ ./embeddings/
+
 # Create models directory and copy trained model if it exists
 RUN mkdir -p ./models
 # Note: Models will be uploaded separately via Railway dashboard or CLI
