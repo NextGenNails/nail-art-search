@@ -1,0 +1,53 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+*.md
+README.md
+DEPLOYMENT_GUIDE.md
+COST_OPTIMIZATION.md
+SETUP_GUIDE.md
+CLIP_FINE_TUNING_GUIDE.md
+
+# Frontend (not needed for backend)
+frontend/
+node_modules/
+
+# Data pipeline (not needed for backend)
+data-pipeline/
+
+# Embeddings (not needed for backend)
+embeddings/
+
+# Scripts and utilities
+*.sh
+Makefile
+setup_*.py
+test_*.py
+debug_*.py
+rebuild_*.py
+
+# Environment files
+.env
+env.example
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

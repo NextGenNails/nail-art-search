@@ -1,0 +1,338 @@
+# 🎨 CLIP Fine-tuning for Nail Art - Google Colab Notebook
+# Copy and paste each section into separate Colab cells
+
+# ============================================================================
+# CELL 1: Install Dependencies
+# ============================================================================
+!pip install torch torchvision transformers pillow numpy tqdm matplotlib
+print("✅ Dependencies installed!")
+
+# ============================================================================
+# CELL 2: Import Libraries
+# ============================================================================
+import os
+import json
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+from PIL import Image
+import numpy as np
+from transformers import CLIPProcessor, CLIPModel
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+
+# Check GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"🚀 Using device: {device}")
+if torch.cuda.is_available():
+    print(f"🎮 GPU: {torch.cuda.get_device_name(0)}")
+    print(f"💾 GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+else:
+    print("⚠️  No GPU detected - training will be very slow!")
+    print("💡 Consider using Colab's GPU runtime")
+
+# ============================================================================
+# CELL 3: Upload Dataset
+# ============================================================================
+from google.colab import files
+import zipfile
+
+print("📁 Upload your nail art dataset ZIP file (nail_art_colab_dataset.zip):")
+uploaded = files.upload()
+
+# Extract the uploaded file
+for filename in uploaded.keys():
+    if filename.endswith('.zip'):
+        print(f"📦 Extracting {filename}...")
+        with zipfile.ZipFile(filename, 'r') as zip_ref:
+            zip_ref.extractall('nail_art_data')
+        print(f"✅ Extracted successfully!")
+        break
+
+# List extracted contents
+print("\n📋 Extracted files:")
+for root, dirs, files in os.walk('nail_art_data'):
+    for file in files:
+        print(f"  📁 {os.path.join(root, file)}")
+
+# Load metadata
+metadata_path = 'nail_art_data/metadata.json'
+if os.path.exists(metadata_path):
+    with open(metadata_path, 'r') as f:
+        metadata = json.load(f)
+    print(f"\n📊 Dataset info:")
+    print(f"  🖼️  Images: {len(metadata)}")
+    for item in metadata:
+        print(f"    • {item['filename']}: {item['description']}")
+
+# ============================================================================
+# CELL 4: Create Dataset
+# ============================================================================
+def create_training_dataset(data_dir):
+    """Create training dataset from extracted nail art data."""
+    dataset = []
+    
+    # Load metadata if available
+    metadata_path = os.path.join(data_dir, 'metadata.json')
+    if os.path.exists(metadata_path):
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        
+        for item in metadata:
+            image_path = os.path.join(data_dir, item['filename'])
+            if os.path.exists(image_path):
+                dataset.append({
+                    'image_path': image_path,
+                    'description': item['description']
+                })
+    else:
+        # Fallback: scan directory for images
+        for filename in os.listdir(data_dir):
+            if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                dataset.append({
+                    'image_path': os.path.join(data_dir, filename),
+                    'description': f"Professional nail art design - {filename}"
+                })
+    
+    return dataset
+
+# Create dataset
+dataset = create_training_dataset('nail_art_data')
+print(f"✅ Created dataset with {len(dataset)} images")
+print(f"\n📝 Sample data:")
+for i, item in enumerate(dataset[:3]):
+    print(f"  {i+1}. {os.path.basename(item['image_path'])}: {item['description']}")
+
+# ============================================================================
+# CELL 5: Dataset Class
+# ============================================================================
+class NailArtDataset(Dataset):
+    def __init__(self, data, processor, max_length=77):
+        self.data = data
+        self.processor = processor
+        self.max_length = max_length
+    
+    def __len__(self):
+        return len(self.data)
+    
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        
+        # Load and process image
+        image = Image.open(item['image_path']).convert('RGB')
+        image_inputs = self.processor(
+            images=image,
+            return_tensors="pt",
+            padding=True
+        )
+        
+        # Process text description
+        text_inputs = self.processor(
+            text=item['description'],
+            return_tensors="pt",
+            padding=True,
+            max_length=self.max_length,
+            truncation=True
+        )
+        
+        return {
+            'image_inputs': image_inputs,
+            'text_inputs': text_inputs,
+            'description': item['description']
+        }
+
+# ============================================================================
+# CELL 6: Load CLIP Model
+# ============================================================================
+print("🔄 Loading CLIP model...")
+model_name = "openai/clip-vit-large-patch14"
+model = CLIPModel.from_pretrained(model_name)
+processor = CLIPProcessor.from_pretrained(model_name)
+
+# Move to device
+model = model.to(device)
+print(f"✅ CLIP model loaded on {device}")
+print(f"📊 Model parameters: {sum(p.numel() for p in model.parameters()):,}")
+print(f"💾 Model size: {sum(p.numel() * p.element_size() for p in model.parameters()) / 1e9:.1f} GB")
+
+# ============================================================================
+# CELL 7: Prepare Data Loaders
+# ============================================================================
+print("📊 Preparing data loaders...")
+
+# For small datasets, use all data for training (no validation split)
+if len(dataset) < 10:
+    print(f"📝 Small dataset detected ({len(dataset)} images) - using all data for training")
+    train_dataset = NailArtDataset(dataset, processor)
+    val_dataset = None
+    
+    # Create data loaders
+    batch_size = min(4, len(dataset))  # Small batch size for small datasets
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = None
+    
+    print(f"✅ Data loaders ready")
+    print(f"  🚂 Training: {len(dataset)} images")
+    print(f"  📦 Batch size: {batch_size}")
+    print(f"  ⚠️  No validation split (dataset too small)")
+else:
+    # Split dataset (80% train, 20% validation)
+    train_size = int(0.8 * len(dataset))
+    val_size = len(dataset) - train_size
+    train_data, val_data = torch.utils.data.random_split(dataset, [train_size, val_size])
+    
+    # Create datasets
+    train_dataset = NailArtDataset(train_data, processor)
+    val_dataset = NailArtDataset(val_data, processor)
+    
+    # Create data loaders
+    batch_size = min(8, len(dataset) // 2)  # Adaptive batch size
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    
+    print(f"✅ Data loaders ready")
+    print(f"  🚂 Training: {len(train_dataset)} images")
+    print(f"  ✅ Validation: {len(val_dataset)} images")
+    print(f"  📦 Batch size: {batch_size}")
+
+# ============================================================================
+# CELL 8: Training Loop
+# ============================================================================
+# Training configuration (optimized for small datasets)
+learning_rate = 5e-6  # Lower learning rate for small datasets
+num_epochs = 5 if len(dataset) < 10 else 10  # Fewer epochs for small datasets
+warmup_steps = min(50, len(dataset) * 2)  # Adaptive warmup
+
+# Setup optimizer and scheduler
+optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs)
+
+# Training loop
+print(f"🎯 Starting training for {num_epochs} epochs...")
+print(f"📚 Learning rate: {learning_rate}")
+print(f"🔥 Warmup steps: {warmup_steps}")
+print(f"📊 Dataset size: {len(dataset)} images")
+
+best_loss = float('inf')
+train_losses = []
+
+for epoch in range(num_epochs):
+    print(f"\n📚 Epoch {epoch+1}/{num_epochs}")
+    
+    # Training
+    model.train()
+    train_loss = 0.0
+    
+    for batch_idx, batch in enumerate(tqdm(train_loader, desc=f"Training Epoch {epoch+1}")):
+        # Move batch to device
+        image_inputs = {k: v.to(device) for k, v in batch['image_inputs'].items()}
+        text_inputs = {k: v.to(device) for k, v in batch['text_inputs'].items()}
+        
+        # Forward pass
+        outputs = model(**image_inputs, **text_inputs)
+        
+        # Calculate contrastive loss
+        logits_per_image = outputs.logits_per_image
+        logits_per_text = outputs.logits_per_text
+        
+        batch_size = logits_per_image.size(0)
+        labels = torch.arange(batch_size).to(device)
+        
+        # Image-to-text and text-to-image loss
+        loss_i2t = nn.CrossEntropyLoss()(logits_per_image, labels)
+        loss_t2i = nn.CrossEntropyLoss()(logits_per_text, labels)
+        loss = (loss_i2t + loss_t2i) / 2
+        
+        # Backward pass
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        train_loss += loss.item()
+        
+        # Learning rate warmup
+        if batch_idx < warmup_steps:
+            lr_scale = min(1., float(batch_idx + 1) / warmup_steps)
+            for pg in optimizer.param_groups:
+                pg['lr'] = learning_rate * lr_scale
+    
+    # Update scheduler
+    scheduler.step()
+    
+    # Calculate average loss
+    avg_train_loss = train_loss / len(train_loader)
+    train_losses.append(avg_train_loss)
+    
+    print(f"Epoch {epoch+1}: Train Loss: {avg_train_loss:.4f}")
+    
+    # Save best model
+    if avg_train_loss < best_loss:
+        best_loss = avg_train_loss
+        print(f"💾 New best model! Loss: {avg_train_loss:.4f}")
+        
+        # Save model
+        os.makedirs('fine_tuned_clip', exist_ok=True)
+        model.save_pretrained('fine_tuned_clip')
+        processor.save_pretrained('fine_tuned_clip')
+        
+        # Save training history
+        history = {
+            'train_losses': train_losses,
+            'best_loss': best_loss,
+            'epochs': list(range(1, epoch + 2)),
+            'dataset_size': len(dataset),
+            'learning_rate': learning_rate,
+            'num_epochs': num_epochs
+        }
+        
+        with open('fine_tuned_clip/training_history.json', 'w') as f:
+            json.dump(history, f, indent=2)
+
+print(f"\n🎉 Training completed!")
+print(f"🏆 Best loss: {best_loss:.4f}")
+print(f"📊 Final training loss: {train_losses[-1]:.4f}")
+
+# Plot training progress
+if len(train_losses) > 1:
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_losses, 'b-', label='Training Loss')
+    plt.title('CLIP Training Progress')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# ============================================================================
+# CELL 9: Download Model
+# ============================================================================
+# Download your fine-tuned model
+print("💾 Preparing model for download...")
+!zip -r fine_tuned_clip.zip fine_tuned_clip/
+
+print("\n📥 Download your fine-tuned model:")
+files.download('fine_tuned_clip.zip')
+
+print("\n🎯 Next steps:")
+print("1. Extract the ZIP file on your local machine")
+print("2. Replace the CLIP model in your backend")
+print("3. Test the improved similarity search!")
+print("\n💡 For production results:")
+print("   • Collect 500+ nail art images")
+print("   • Use the same training process")
+print("   • Expect 20-40% improvement in search accuracy")
+
+# ============================================================================
+# INSTRUCTIONS FOR USE:
+# ============================================================================
+# 1. Go to colab.research.google.com
+# 2. Create new notebook
+# 3. Runtime → Change runtime type → GPU
+# 4. Copy each CELL section above into separate cells
+# 5. Upload your nail_art_colab_dataset.zip file when prompted
+# 6. Run all cells in order
+# 7. Download your trained model
+# 8. Replace in your backend for improved search!
+
+

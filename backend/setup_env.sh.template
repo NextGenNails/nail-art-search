@@ -1,0 +1,12 @@
+# Environment Variables Template
+# Copy this file to setup_env.sh and add your real API keys
+
+export OPENAI_API_KEY="your-openai-api-key-here"
+export PINECONE_API_KEY="your-pinecone-api-key-here"
+export PINECONE_INDEX_NAME="nail-art-embeddings"
+export SUPABASE_URL="your-supabase-project-url-here"
+export SUPABASE_ANON_KEY="your-supabase-anon-key-here"
+export DEFAULT_TOP_K="20"  # Number of similar images to return
+export BACKEND_HOST="0.0.0.0"
+export BACKEND_PORT="8000"
+export LOG_LEVEL="INFO"

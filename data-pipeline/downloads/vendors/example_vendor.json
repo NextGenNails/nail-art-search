@@ -1,0 +1,16 @@
+{
+  "vendor_name": "Example Nail Studio",
+  "instagram": "@examplenailstudio",
+  "website": "https://examplenailstudio.com",
+  "booking_url": "https://examplenailstudio.com/book",
+  "location": "New York, NY",
+  "phone": "+1 (555) 123-4567",
+  "specialties": [
+    "Gel Extensions",
+    "3D Nail Art",
+    "Hand-painted Designs"
+  ],
+  "price_range": "$50-150",
+  "rating": 4.8,
+  "images": []
+}

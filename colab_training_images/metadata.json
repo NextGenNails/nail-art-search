@@ -1,0 +1,18 @@
+[
+  {
+    "filename": "Creative_Contemporary_Nail_Art.jpg",
+    "description": "Creative nail art featuring contemporary style and artistic elements",
+    "original_path": "data-pipeline/downloads/demo_images/nail_art_2.jpg",
+    "style": "Modern Professional",
+    "technique": "Hand-painted",
+    "colors": "Mixed"
+  },
+  {
+    "filename": "Modern_Nail_Art_Design.jpg",
+    "description": "Professional nail art design with modern aesthetic and clean lines",
+    "original_path": "data-pipeline/downloads/demo_images/nail_art_1.jpg",
+    "style": "Modern Professional",
+    "technique": "Hand-painted",
+    "colors": "Mixed"
+  }
+]

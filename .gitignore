@@ -1,0 +1,64 @@
+# Large files and data
+data-pipeline/downloads/nail_art_images/*.jpg
+data-pipeline/downloads/nail_art_images/*.webp
+data-pipeline/downloads/nail_art_images/*.png
+data-pipeline/downloads/*.json
+data-pipeline/*.faiss
+data-pipeline/*.pkl
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.*
+*.env
+.envrc
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Poetry
+poetry.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Security - API keys and credentials
+*api_key*
+*password*
+*secret*
+*token*
+*credential*
+setup_env.sh
+.env
+.envrc models/
+colab_training_images_large/
+models/
+colab_training_images_large/
+*.zip
+*.safetensors
