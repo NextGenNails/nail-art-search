@@ -32,12 +32,22 @@ def get_clip_model() -> Tuple:
     total_start = time.time()
     
     try:
+        # Check if trained model exists
+        models_dir = Path("models")
+        trained_model_path = models_dir / "config.json"
+        
+        if trained_model_path.exists():
+            logger.info("🎯 Found trained model! Loading your custom CLIP model...")
+            model_name = str(models_dir.absolute())
+        else:
+            logger.info("📝 No trained model found, using standard CLIP model...")
+            model_name = "openai/clip-vit-large-patch14"
+        
         # Step 1: Load processor
         logger.info("📝 Loading CLIP processor...")
         processor_start = time.time()
         
         from transformers import CLIPProcessor
-        model_name = "openai/clip-vit-large-patch14"
         _processor = CLIPProcessor.from_pretrained(model_name)
         
         processor_time = time.time() - processor_start
