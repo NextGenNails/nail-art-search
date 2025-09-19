@@ -32,10 +32,12 @@ from PIL import Image
 import io
 import numpy as np
 from pathlib import Path
+from dataclasses import asdict
 
 # Import our modules
 from pinecone_client import create_pinecone_client
 from enhanced_embed import get_clip_embedding
+from metadata_search import MetadataSearchEngine
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -132,11 +134,12 @@ def get_vendor_for_image(filename: str, style: str) -> dict:
 # Global variables
 pinecone_client = None
 _index_loaded = False
+metadata_search_engine = None
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize Pinecone client on startup."""
-    global pinecone_client, _index_loaded
+    """Initialize Pinecone client and search engine on startup."""
+    global pinecone_client, _index_loaded, metadata_search_engine
     
     try:
         logger.info("🚀 Starting Nail Art Backend with Pinecone...")
@@ -159,6 +162,13 @@ async def startup_event():
             logger.info("✅ Pinecone index loaded successfully!")
         else:
             logger.warning("⚠️  Pinecone index is empty - no images available for search")
+        
+        # Initialize metadata search engine
+        try:
+            metadata_search_engine = MetadataSearchEngine()
+            logger.info("🔍 Metadata search engine initialized!")
+        except Exception as e:
+            logger.warning(f"⚠️  Could not initialize metadata search: {e}")
         
     except Exception as e:
         logger.error(f"❌ Failed to initialize Pinecone: {e}")
@@ -402,6 +412,146 @@ async def list_images():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list images: {e}")
+
+@app.get("/search/vendors")
+async def search_vendors(
+    q: str = None,  # General query
+    name: str = None,  # Vendor name
+    city: str = None,  # City
+    services: str = None,  # Services (comma-separated)
+    price_range: str = None,  # Price range ($, $$, $$$)
+    availability: str = None,  # Day of week
+    instagram: str = None  # Instagram handle
+):
+    """
+    Search vendors by metadata
+    
+    Examples:
+    - /search/vendors?q=Ariadna
+    - /search/vendors?city=Dallas&services=acrylic
+    - /search/vendors?price_range=$$&availability=monday
+    """
+    
+    if not metadata_search_engine:
+        raise HTTPException(status_code=503, detail="Metadata search engine not available")
+    
+    try:
+        # Build search parameters
+        search_params = {}
+        if name:
+            search_params["name"] = name
+        if city:
+            search_params["city"] = city
+        if services:
+            search_params["services"] = [s.strip() for s in services.split(",")]
+        if price_range:
+            search_params["price_range"] = price_range
+        if availability:
+            search_params["availability"] = availability
+        if instagram:
+            search_params["instagram"] = instagram
+        
+        # Perform search
+        if search_params:
+            results = metadata_search_engine.advanced_search(search_params)
+        elif q:
+            results = metadata_search_engine.search_vendors(query=q)
+        else:
+            # Return all vendors if no search criteria
+            results = [asdict(vendor) for vendor in metadata_search_engine.vendors]
+            for result in results:
+                result["search_score"] = 1.0
+                result["match_reasons"] = ["All vendors"]
+        
+        return {
+            "query": q,
+            "filters": search_params,
+            "total_results": len(results),
+            "vendors": results
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Vendor search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+@app.get("/search/services")
+async def search_by_services(services: str, match_all: bool = False):
+    """
+    Search vendors by services/specialties
+    
+    Examples:
+    - /search/services?services=acrylic,gel_x
+    - /search/services?services=3d_art&match_all=true
+    """
+    
+    if not metadata_search_engine:
+        raise HTTPException(status_code=503, detail="Metadata search engine not available")
+    
+    try:
+        service_list = [s.strip() for s in services.split(",")]
+        results = metadata_search_engine.search_by_services(service_list, match_all)
+        
+        return {
+            "services_searched": service_list,
+            "match_all": match_all,
+            "total_results": len(results),
+            "vendors": results
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Service search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+@app.get("/search/availability")
+async def search_by_availability(day: str = None, time: str = None):
+    """
+    Search vendors by availability
+    
+    Examples:
+    - /search/availability?day=monday
+    - /search/availability?day=saturday&time=morning
+    """
+    
+    if not metadata_search_engine:
+        raise HTTPException(status_code=503, detail="Metadata search engine not available")
+    
+    try:
+        results = metadata_search_engine.search_by_availability(day, time)
+        
+        return {
+            "day": day,
+            "time": time,
+            "total_results": len(results),
+            "vendors": results
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Availability search failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+@app.get("/vendors")
+async def list_all_vendors():
+    """List all vendors in the database"""
+    
+    if not metadata_search_engine:
+        raise HTTPException(status_code=503, detail="Metadata search engine not available")
+    
+    try:
+        vendors = metadata_search_engine.vendors
+        vendor_list = []
+        
+        for vendor in vendors:
+            vendor_dict = asdict(vendor)
+            vendor_list.append(vendor_dict)
+        
+        return {
+            "total_vendors": len(vendor_list),
+            "vendors": vendor_list
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to list vendors: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list vendors: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
