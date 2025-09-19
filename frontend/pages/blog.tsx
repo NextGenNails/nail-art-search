@@ -70,12 +70,12 @@ export default function Blog() {
   return (
     <>
       <Head>
-        <title>Nail Art Blog - Tips, Trends & Guides | Nail'd</title>
+        <title>Nail Art Blog - Tips, Trends & Guides | Nail&apos;d</title>
         <meta name="description" content="Discover the latest nail art trends, find expert tips, and learn about the best nail techs in your area. Your ultimate guide to beautiful nails." />
         <meta name="keywords" content="nail art blog, nail trends 2025, nail care tips, nail salon reviews, manicure guide, nail art inspiration, nail tech recommendations" />
         
         {/* Open Graph */}
-        <meta property="og:title" content="Nail Art Blog - Tips, Trends & Guides | Nail'd" />
+        <meta property="og:title" content="Nail Art Blog - Tips, Trends & Guides | Nail&apos;d" />
         <meta property="og:description" content="Discover the latest nail art trends, find expert tips, and learn about the best nail techs in your area." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://naild.app/blog" />
@@ -83,7 +83,7 @@ export default function Blog() {
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Nail Art Blog - Tips, Trends & Guides | Nail'd" />
+        <meta name="twitter:title" content="Nail Art Blog - Tips, Trends & Guides | Nail&apos;d" />
         <meta name="twitter:description" content="Discover the latest nail art trends, find expert tips, and learn about the best nail techs in your area." />
         
         {/* Structured Data for Blog */}
