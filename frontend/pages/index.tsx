@@ -97,7 +97,7 @@ export default function Home() {
       distance: '1.9 mi away',
       location: 'Allen, TX',
       rating: '4.9', 
-      image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
       address: '567 Cedar Ln, Allen, TX 75013',
       website: 'https://chicnailbar.com'
     }
@@ -409,7 +409,7 @@ export default function Home() {
                           className="w-full h-64 sm:h-72 object-cover rounded-xl"
                           onError={(e) => {
                             // Fallback to placeholder if image fails to load
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center'
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center'
                           }}
                         />
                         {/* Star rating badge - ghosted */}
