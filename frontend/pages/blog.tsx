@@ -114,7 +114,7 @@ export default function Blog() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex justify-between items-center">
               <Link href="/" className="text-2xl font-bold text-black pp-eiko">
-                Nail'd
+                Nail&apos;d
               </Link>
               <nav className="hidden md:flex space-x-8">
                 <Link href="/" className="text-gray-600 hover:text-black transition-colors">
@@ -212,7 +212,7 @@ export default function Blog() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
-                <h3 className="text-xl font-bold mb-4 pp-eiko">Nail'd</h3>
+                <h3 className="text-xl font-bold mb-4 pp-eiko">Nail&apos;d</h3>
                 <p className="text-gray-400">
                   AI-powered nail art search to find your perfect nail tech.
                 </p>
@@ -246,7 +246,7 @@ export default function Blog() {
               </div>
             </div>
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2025 Nail'd. All rights reserved.</p>
+              <p>&copy; 2025 Nail&apos;d. All rights reserved.</p>
             </div>
           </div>
         </footer>

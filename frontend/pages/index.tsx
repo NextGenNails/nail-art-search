@@ -207,33 +207,33 @@ export default function Home() {
     <>
       <Head>
         {/* Primary Meta Tags */}
-        <title>Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech</title>
-        <meta name="title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <title>Nail&apos;d - AI-Powered Nail Art Search | Find Your Perfect Nail Tech</title>
+        <meta name="title" content="Nail&apos;d - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
         <meta name="description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art in Dallas, TX and beyond." />
         <meta name="keywords" content="nail art search, nail tech finder, nail salon near me, nail design, manicure, nail artist, Dallas nail salon, AI nail search, nail inspiration, custom nails" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://naild.app/" />
-        <meta property="og:title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <meta property="og:title" content="Nail&apos;d - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
         <meta property="og:description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art." />
         <meta property="og:image" content="https://naild.app/og-image.jpg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Nail'd" />
+        <meta property="og:site_name" content="Nail&apos;d" />
         <meta property="og:locale" content="en_US" />
         
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://naild.app/" />
-        <meta property="twitter:title" content="Nail'd - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
+        <meta property="twitter:title" content="Nail&apos;d - AI-Powered Nail Art Search | Find Your Perfect Nail Tech" />
         <meta property="twitter:description" content="Upload a photo of your dream nail design and instantly find skilled nail technicians near you who can recreate it. AI-powered visual search for nail art." />
         <meta property="twitter:image" content="https://naild.app/og-image.jpg" />
         <meta property="twitter:creator" content="@naild_app" />
         
         {/* Additional SEO */}
-        <meta name="application-name" content="Nail'd" />
-        <meta name="apple-mobile-web-app-title" content="Nail'd" />
+        <meta name="application-name" content="Nail&apos;d" />
+        <meta name="apple-mobile-web-app-title" content="Nail&apos;d" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
