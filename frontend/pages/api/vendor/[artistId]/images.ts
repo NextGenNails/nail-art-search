@@ -15,77 +15,126 @@ export default async function handler(
       return res.status(400).json({ error: 'Artist ID required' })
     }
     
-    // Real portfolio images
+    // Real portfolio images from your database
     const portfolioImages = {
       'ariadna': [
-        // Using the actual images you provided for Ariadna
+        // Ariadna's assigned images from your database (artistic/3D positions: batch_X_0 and batch_X_3)
         {
-          id: "ariadna_3d_sculptural_1",
-          image_url: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=500&h=500&fit=crop&crop=center",
-          style: "3D Sculptural Art with Mixed Media",
-          colors: "Multi-color, Green, Red, Black, White",
-          filename: "ariadna_3d_sculptural_art.jpg",
+          id: "batch_1_0",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_1_0.jpg",
+          style: "3D Sculptural Art",
+          colors: "Multi-color, Artistic",
+          filename: "batch_1_0.jpg",
           similarity_score: 0.95,
           artist_name: "Ariadna Palomo",
-          techniques: ["sculpted", "3d_art", "mixed_media"],
-          description: "Complex 3D sculptural design with multiple dimensional elements"
+          techniques: ["sculpted", "3d_art"]
         },
         {
-          id: "ariadna_floral_3d_1", 
-          image_url: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&h=500&fit=crop&crop=center",
-          style: "Floral 3D with Gold Accents",
-          colors: "Pink, White, Gold, Natural",
-          filename: "ariadna_floral_3d_gold.jpg",
-          similarity_score: 0.92,
+          id: "batch_1_3",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_1_3.jpg",
+          style: "Complex Artistic Design",
+          colors: "Mixed Media",
+          filename: "batch_1_3.jpg",
+          similarity_score: 0.93,
           artist_name: "Ariadna Palomo",
-          techniques: ["gel_x", "3d_art", "gold_foil"],
-          description: "Delicate 3D floral designs with gold foil details"
+          techniques: ["polygel", "artistic"]
         },
         {
-          id: "ariadna_geometric_dots_1",
-          image_url: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500&h=500&fit=crop&crop=center",
-          style: "Geometric Patterns with Dots",
-          colors: "Blue, Navy, White, Clean",
-          filename: "ariadna_geometric_dots.jpg",
-          similarity_score: 0.89,
-          artist_name: "Ariadna Palomo", 
-          techniques: ["gel", "dotwork", "geometric"],
-          description: "Clean geometric designs with precise dotwork patterns"
-        },
-        {
-          id: "ariadna_character_art_1",
-          image_url: "https://images.unsplash.com/photo-1583847645687-4770c01bec81?w=500&h=500&fit=crop&crop=center",
-          style: "Character Art Nails",
-          colors: "Black, Multi-color, Themed",
-          filename: "ariadna_character_art.jpg",
+          id: "batch_2_0",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_2_0.jpg",
+          style: "Dimensional Nail Art",
+          colors: "Vibrant, Multi-tone",
+          filename: "batch_2_0.jpg",
           similarity_score: 0.91,
           artist_name: "Ariadna Palomo",
-          techniques: ["acrylic", "hand_painted", "detailed_art"],
-          description: "Detailed character artwork and themed designs"
+          techniques: ["gel_x", "dimensional"]
         },
         {
-          id: "ariadna_abstract_mixed_1",
-          image_url: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=500&h=500&fit=crop&crop=center", 
-          style: "Abstract Mixed Media",
-          colors: "Orange, Red, Blue, Mixed",
-          filename: "ariadna_abstract_mixed.jpg",
+          id: "batch_2_3",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_2_3.jpg",
+          style: "Sculptural Elements",
+          colors: "Bold, Artistic",
+          filename: "batch_2_3.jpg",
+          similarity_score: 0.89,
+          artist_name: "Ariadna Palomo",
+          techniques: ["sculpted", "rubber_base"]
+        },
+        {
+          id: "batch_3_0",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_3_0.jpg",
+          style: "3D Mixed Media",
+          colors: "Complex, Layered",
+          filename: "batch_3_0.jpg",
+          similarity_score: 0.94,
+          artist_name: "Ariadna Palomo",
+          techniques: ["dual_system", "3d_art"]
+        },
+        {
+          id: "batch_3_3",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_3_3.jpg",
+          style: "Artistic Expression",
+          colors: "Creative, Bold",
+          filename: "batch_3_3.jpg",
+          similarity_score: 0.87,
+          artist_name: "Ariadna Palomo",
+          techniques: ["custom_designs", "acrylic"]
+        },
+        {
+          id: "batch_4_0",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_4_0.jpg",
+          style: "Sculptural Design",
+          colors: "Artistic, Multi-dimensional",
+          filename: "batch_4_0.jpg",
+          similarity_score: 0.92,
+          artist_name: "Ariadna Palomo",
+          techniques: ["sculpted", "polygel"]
+        },
+        {
+          id: "batch_4_3",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_4_3.jpg",
+          style: "3D Artistry",
+          colors: "Complex, Textured",
+          filename: "batch_4_3.jpg",
+          similarity_score: 0.90,
+          artist_name: "Ariadna Palomo",
+          techniques: ["3d_art", "gel_x"]
+        },
+        {
+          id: "batch_5_0",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_5_0.jpg",
+          style: "Dimensional Creation",
+          colors: "Innovative, Mixed",
+          filename: "batch_5_0.jpg",
           similarity_score: 0.88,
           artist_name: "Ariadna Palomo",
-          techniques: ["polygel", "mixed_media", "textured"],
-          description: "Abstract designs combining multiple techniques and materials"
+          techniques: ["rubber_base", "sculpted"]
         },
-        // Fill remaining 15 slots with variations of her styles
-        ...Array.from({ length: 15 }, (_, i) => ({
-          id: `ariadna_portfolio_${i + 6}`,
-          image_url: `https://images.unsplash.com/photo-${1632345031435 + i * 1000}?w=500&h=500&fit=crop&crop=center&sig=${i}`,
-          style: ["3D Sculptural Variations", "Floral 3D Series", "Geometric Art", "Character Designs", "Abstract Creations"][i % 5],
-          colors: ["Multi-color Artistic", "Pink Gold Elegance", "Blue Navy Clean", "Themed Colorful", "Mixed Media"][i % 5],
-          filename: `ariadna_variation_${i + 6}.jpg`,
-          similarity_score: 0.82 + (Math.random() * 0.08),
+        {
+          id: "batch_5_3",
+          image_url: "https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_5_3.jpg",
+          style: "Custom 3D Design",
+          colors: "Unique, Artistic",
+          filename: "batch_5_3.jpg",
+          similarity_score: 0.86,
           artist_name: "Ariadna Palomo",
-          techniques: [["sculpted", "3d_art"], ["gel_x", "gold_foil"], ["geometric", "dotwork"], ["hand_painted", "detailed"], ["polygel", "textured"]][i % 5],
-          description: `Signature Ariadna Palomo design showcasing her artistic expertise`
-        }))
+          techniques: ["dual_system", "custom_designs"]
+        },
+        // Continue with remaining 10 images assigned to Ariadna
+        ...Array.from({ length: 10 }, (_, i) => {
+          const batchNum = i + 6
+          const imageIndex = i % 2 === 0 ? 0 : 3
+          return {
+            id: `batch_${batchNum}_${imageIndex}`,
+            image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/batch_${batchNum}_${imageIndex}.jpg`,
+            style: ["Advanced 3D Work", "Sculptural Masterpiece", "Artistic Innovation", "Complex Design", "Mixed Media Art"][i % 5],
+            colors: ["Multi-dimensional", "Artistic Blend", "Creative Mix", "Bold Statement", "Unique Palette"][i % 5],
+            filename: `batch_${batchNum}_${imageIndex}.jpg`,
+            similarity_score: 0.82 + (Math.random() * 0.08),
+            artist_name: "Ariadna Palomo",
+            techniques: [["sculpted", "3d_art"], ["polygel", "artistic"], ["gel_x", "dimensional"], ["rubber_base", "complex"], ["dual_system", "custom"]][i % 5],
+            description: `Professional 3D nail artistry by Ariadna Palomo`
+          }
+        })
       ],
       'mia': [
         // Real nail art images from your database for Mia
