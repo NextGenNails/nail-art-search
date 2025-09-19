@@ -1,0 +1,72 @@
+{
+  "onix_beauty_center__ariadna_palomo": {
+    "vendor_id": "onix_beauty_center__ariadna_palomo",
+    "vendor_name": "Onix Beauty Center - Ariadna Palomo",
+    "vendor_location": "1234 Main Street, Suite 102, Dallas, TX 75201",
+    "city": "Dallas",
+    "state": "TX",
+    "zip_code": "75201",
+    "vendor_website": "https://instagram.com/arizonailss",
+    "booking_link": "https://instagram.com/arizonailss",
+    "vendor_rating": "4.9",
+    "vendor_phone": "(214) 555-0198",
+    "instagram_handle": "@arizonailss",
+    "specialties": [
+      "acrylic",
+      "gel_x",
+      "polygel",
+      "rubber_base",
+      "dual_system",
+      "sculpted",
+      "3d_art",
+      "custom_designs"
+    ],
+    "price_range": "$$$",
+    "hours": {
+      "monday": "10:00 AM - 7:00 PM",
+      "tuesday": "10:00 AM - 7:00 PM",
+      "wednesday": "10:00 AM - 7:00 PM",
+      "thursday": "10:00 AM - 7:00 PM",
+      "friday": "10:00 AM - 8:00 PM",
+      "saturday": "9:00 AM - 6:00 PM",
+      "sunday": "Closed"
+    },
+    "description": "Premium nail artistry by Ariadna Palomo featuring custom 3D designs, sculpted nails, and innovative techniques. Specializing in unique artistic creations and luxury nail experiences. Services: Acrylic, Gel-X, Polygel, Rubber Base, Dual System, Sculpted. Price range: $50-$150. Booking via Instagram DM.",
+    "profile_image": null
+  },
+  "ivys_nail_and_lash__mia_pham": {
+    "vendor_id": "ivys_nail_and_lash__mia_pham",
+    "vendor_name": "Ivy's Nail and Lash - Mia Pham",
+    "vendor_location": "5678 Preston Road, Suite 201, Plano, TX 75024",
+    "city": "Plano",
+    "state": "TX",
+    "zip_code": "75024",
+    "vendor_website": "https://www.ivysnailandlash.com",
+    "booking_link": "https://www.ivysnailandlash.com",
+    "vendor_rating": "4.8",
+    "vendor_phone": "(972) 555-0245",
+    "instagram_handle": "@Ivysnailandlash",
+    "specialties": [
+      "acrylic",
+      "dip_powder",
+      "builder_gel",
+      "gel_x",
+      "polygel",
+      "solar_gel",
+      "extensions",
+      "manicure"
+    ],
+    "price_range": "$$",
+    "hours": {
+      "monday": "9:00 AM - 7:00 PM",
+      "tuesday": "9:00 AM - 7:00 PM",
+      "wednesday": "9:00 AM - 7:00 PM",
+      "thursday": "9:00 AM - 7:00 PM",
+      "friday": "9:00 AM - 8:00 PM",
+      "saturday": "8:00 AM - 6:00 PM",
+      "sunday": "Closed"
+    },
+    "description": "Professional nail and lash services by Mia Pham. Specializing in acrylic extensions, dip powder, builder gel, Gel-X, polygel, and solar gel techniques. Full service salon offering comprehensive nail care. Price range: $35-$150. Book online at ivysnailandlash.com.",
+    "profile_image": null
+  }
+}

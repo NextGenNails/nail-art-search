@@ -1,0 +1,59 @@
+{
+  "vendors": [
+    {
+      "vendor_name": "Example Nail Studio",
+      "vendor_location": "123 Main Street, Suite 100, Dallas, TX 75201",
+      "city": "Dallas",
+      "state": "TX",
+      "zip_code": "75201",
+      "vendor_website": "https://examplenailstudio.com",
+      "booking_link": "https://examplenailstudio.com/book",
+      "vendor_rating": "4.8",
+      "vendor_phone": "(214) 555-0123",
+      "instagram_handle": "@examplenails",
+      "specialties": ["french", "acrylic", "gel", "nail_art"],
+      "price_range": "$$",
+      "description": "Professional nail studio specializing in custom designs",
+      "hours": {
+        "monday": "9:00 AM - 7:00 PM",
+        "tuesday": "9:00 AM - 7:00 PM", 
+        "wednesday": "9:00 AM - 7:00 PM",
+        "thursday": "9:00 AM - 7:00 PM",
+        "friday": "9:00 AM - 8:00 PM",
+        "saturday": "8:00 AM - 6:00 PM",
+        "sunday": "10:00 AM - 5:00 PM"
+      },
+      "profile_image": "https://example.com/profile.jpg"
+    },
+    {
+      "vendor_name": "Luxe Nail Lounge",
+      "vendor_location": "456 Oak Avenue, Plano, TX 75024",
+      "city": "Plano", 
+      "state": "TX",
+      "zip_code": "75024",
+      "vendor_website": "https://luxenaillounge.com",
+      "booking_link": "https://luxenaillounge.com/appointments",
+      "vendor_rating": "4.9",
+      "vendor_phone": "(972) 555-0456",
+      "instagram_handle": "@luxenaillounge",
+      "specialties": ["gel", "dip", "extensions", "pedicure"],
+      "price_range": "$$$",
+      "description": "Upscale nail salon with luxury treatments"
+    },
+    {
+      "vendor_name": "Creative Nails & Spa",
+      "vendor_location": "789 Elm Street, Richardson, TX 75081",
+      "city": "Richardson",
+      "state": "TX", 
+      "zip_code": "75081",
+      "vendor_website": "https://creativenailsspa.com",
+      "booking_link": "https://creativenailsspa.com/book",
+      "vendor_rating": "4.7",
+      "vendor_phone": "(469) 555-0789",
+      "instagram_handle": "@creativenails",
+      "specialties": ["nail_art", "manicure", "french", "acrylic"],
+      "price_range": "$$",
+      "description": "Creative nail art specialists"
+    }
+  ]
+}
