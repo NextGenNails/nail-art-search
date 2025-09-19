@@ -324,21 +324,19 @@ export default function SearchTest() {
                     
                     {/* Action Buttons */}
                     <div className="flex space-x-3">
+                      <Link
+                        href={`/artist/${vendor.vendor_name.includes('Ariadna') ? 'ariadna' : 'mia'}`}
+                        className="flex-1 bg-white text-black py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors text-center pp-eiko"
+                      >
+                        View Portfolio
+                      </Link>
                       <a
                         href={vendor.booking_link} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex-1 bg-white text-black py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors text-center pp-eiko"
-                      >
-                        Book Now
-                      </a>
-                      <a
-                        href={vendor.instagram_handle.startsWith('@') ? `https://instagram.com/${vendor.instagram_handle.slice(1)}` : vendor.instagram_handle}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="bg-gray-700 text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors pp-eiko"
                       >
-                        Instagram
+                        Book Now
                       </a>
                     </div>
                   </div>
