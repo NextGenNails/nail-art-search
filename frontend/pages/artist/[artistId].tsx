@@ -213,42 +213,26 @@ export default function ArtistProfile() {
               </p>
             </div>
 
-            {/* Image Grid */}
-            {images.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                {images.map((image, index) => (
-                  <div 
-                    key={image.id}
-                    className="group cursor-pointer"
-                    onClick={() => setSelectedImage(image)}
-                  >
-                    <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-105">
-                      <img
-                        src={image.image_url}
-                        alt={`${vendor.vendor_name} - ${image.style}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback to placeholder
-                          e.currentTarget.src = `https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400&h=400&fit=crop&crop=center&sig=${index}`
-                        }}
-                      />
-                      
-                      {/* Overlay with info */}
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                        <div className="p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <p className="font-medium text-sm">{image.style}</p>
-                          <p className="text-xs text-gray-300">{image.colors}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {/* Image Grid - Empty State */}
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="w-24 h-24 mx-auto mb-6 bg-black bg-opacity-10 rounded-2xl flex items-center justify-center">
+                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-medium text-black mb-3 pp-eiko">Portfolio Coming Soon</h3>
+                <p className="text-gray-600 mb-6">
+                  We&apos;re preparing {vendor?.vendor_name.split(' - ')[1] || 'this artist'}&apos;s portfolio with their latest nail art designs.
+                </p>
+                <div className="bg-black bg-opacity-5 rounded-2xl p-6">
+                  <p className="text-sm text-gray-600 mb-2">Ready for database integration:</p>
+                  <p className="text-xs text-gray-500">
+                    This portfolio will display real images from the artist&apos;s work once connected to the database.
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No portfolio images available yet.</p>
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Hours Section */}
@@ -269,32 +253,7 @@ export default function ArtistProfile() {
           </div>
         </div>
 
-        {/* Image Modal */}
-        {selectedImage && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <div className="max-w-2xl max-h-full">
-              <img
-                src={selectedImage.image_url}
-                alt={`${vendor.vendor_name} - ${selectedImage.style}`}
-                className="w-full h-auto rounded-2xl"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <div className="text-center mt-4">
-                <p className="text-white font-medium">{selectedImage.style}</p>
-                <p className="text-gray-300 text-sm">{selectedImage.colors}</p>
-                <button
-                  onClick={() => setSelectedImage(null)}
-                  className="mt-4 px-4 py-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Image Modal removed - no images to display */}
 
         {/* Footer */}
         <footer className="bg-black text-white py-12 mt-16">
