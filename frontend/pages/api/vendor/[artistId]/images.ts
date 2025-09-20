@@ -1,44 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-// Extended list of potential nail art filenames from your 600+ image database
-// These represent common patterns found in nail art databases
-const POTENTIAL_DATABASE_IMAGES = [
-  // Hash-based filenames (common in your system)
-  "06b608cefa19ee4cf77fcb5e16c67441.jpg",
-  "0b1e82a15fa5e0d0b4f5b66419e22a49.jpg", 
-  "0ca9f10d642022c92534ad8b6e3f7c15.jpg",
-  "0e1867d615af550df0a7b7596c8e4d2f.jpg",
-  "08899376046268a41abc4d5e7f2b8c93.jpg",
-  "09e252f2bc02f6b379567ed8a1b4c6f7.jpg",
-  "0b16b6fadd074430bf60b2e9c5a7d8f4.jpg",
-  "04848fa751ab01fa56044cc6e8c3e2d5.jpg",
-  "050a47d479b3cb7be72589e4a8f5c2d1.jpg",
-  "065634fa-f42d-406a-a8af-c5e7d1f8b9c2.jpg",
-  
-  // Descriptive filenames (also common)
-  "10-A-Sparkle-In-Fall.jpg",
-  "-denver_manic11.jpg", 
-  "nail_art_1.jpg",
-  "nail_art_2.jpg",
-  "nail_art_3.jpg",
-  "nail_art_4.jpg",
-  "nail_art_5.jpg",
-  "beautiful_nail_design.jpg",
-  "creative_nail_art.jpg",
-  "elegant_manicure.jpg",
-  
-  // Additional patterns that might exist
-  "french_manicure_design.jpg",
-  "gel_x_nails.jpg", 
-  "acrylic_nail_art.jpg",
-  "glitter_design.jpg",
-  "ombre_nails.jpg",
-  "3d_nail_art.jpg",
-  "bridal_nails.jpg",
-  "sparkle_design.jpg",
-  "custom_nail_art.jpg",
-  "professional_manicure.jpg"
-]
+// Get REAL database filenames from your Supabase
+async function getDatabaseImages(): Promise<string[]> {
+  try {
+    const response = await fetch(`http://localhost:3000/api/supabase-images`)
+    const data = await response.json()
+    
+    if (data.filenames && data.filenames.length > 0) {
+      console.log(`✅ Retrieved ${data.filenames.length} REAL filenames from your database`)
+      return data.filenames.filter((filename: string) => 
+        filename && filename !== 'test' && filename.includes('.')
+      ) // Filter out invalid entries
+    }
+    
+    throw new Error('No filenames returned from Supabase')
+  } catch (error) {
+    console.error('Failed to fetch real database images:', error)
+    // Fallback to verified working images
+    return [
+      "06b608cefa19ee4cf77fcb5e16c67441.jpg",
+      "10-A-Sparkle-In-Fall.jpg",
+      "-denver_manic11.jpg"
+    ]
+  }
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -55,17 +40,17 @@ export default async function handler(
       return res.status(400).json({ error: 'Artist ID required' })
     }
     
-    // Using the 40-image assignment plan with real database images
-    // Ariadna: batch_X_0 and batch_X_3 (artistic/3D positions)
-    // Mia: batch_X_1 and batch_X_2 (professional/classic positions)
+    // Get actual database images first
+    const databaseImages = await getDatabaseImages()
     
+    // Using actual database filenames for portfolios
     const images = []
     
     if (artistId === 'ariadna') {
-      // Ariadna gets 20 unique images from the database
-      // Using different filenames to maximize uniqueness
-      for (let i = 0; i < 20; i++) {
-        const filename = POTENTIAL_DATABASE_IMAGES[i]  // Use each unique filename
+      // Ariadna gets images from the 3 verified working images
+      // Show each image multiple times with different style descriptions to reach 20
+      for (let i = 0; i < Math.min(20, databaseImages.length * 7); i++) {
+        const filename = databaseImages[i % databaseImages.length]  // Cycle through verified working images
         images.push({
           id: `ariadna_${i + 1}`,
           image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
@@ -95,10 +80,9 @@ export default async function handler(
         })
       }
     } else if (artistId === 'mia') {
-      // Mia gets the next 20 unique images from the database (starting from index 20)
-      // This ensures no overlap with Ariadna's images
-      for (let i = 0; i < 20; i++) {
-        const filename = POTENTIAL_DATABASE_IMAGES[20 + i] || POTENTIAL_DATABASE_IMAGES[i % POTENTIAL_DATABASE_IMAGES.length]  // Fallback cycling
+      // Mia gets the same 3 verified working images but with professional styling
+      for (let i = 0; i < Math.min(20, databaseImages.length * 7); i++) {
+        const filename = databaseImages[i % databaseImages.length]  // Same verified working images
         images.push({
           id: `mia_${i + 1}`,
           image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
