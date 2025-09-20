@@ -12,7 +12,7 @@ const mockVendors = [
     booking_link: "https://instagram.com/arizonailss",
     vendor_rating: "4.9",
     search_score: 3.0,
-    match_reasons: []
+    match_reasons: [] as string[]
   },
   {
     vendor_name: "Ivy's Nail and Lash - Mia Pham",
@@ -24,7 +24,7 @@ const mockVendors = [
     booking_link: "https://www.ivysnailandlash.com",
     vendor_rating: "4.8",
     search_score: 2.5,
-    match_reasons: []
+    match_reasons: [] as string[]
   }
 ]
 

@@ -225,7 +225,7 @@ export default function SearchTest() {
                   onClick={() => { setQuery('Ariadna'); setSearchType('general'); }}
                   className="px-4 py-2 bg-black bg-opacity-10 text-black rounded-full text-sm hover:bg-opacity-20 transition-all duration-200 pp-eiko"
                 >
-                  Search "Ariadna"
+                  Search &quot;Ariadna&quot;
                 </button>
                 <button
                   onClick={() => { setFilters({...filters, city: 'Dallas', services: 'acrylic'}); setSearchType('advanced'); }}

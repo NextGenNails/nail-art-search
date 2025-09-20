@@ -45,6 +45,10 @@ export default function Home() {
   const [showResults, setShowResults] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [vendorSearchQuery, setVendorSearchQuery] = useState('')
+  const [vendorSearchResults, setVendorSearchResults] = useState<any[]>([])
+  const [showVendorResults, setShowVendorResults] = useState(false)
+  const [isVendorSearching, setIsVendorSearching] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -193,6 +197,39 @@ export default function Home() {
   const handleFindNailTech = () => {
     // Always prompt user to upload an image when button is clicked
     fileInputRef.current?.click()
+  }
+
+  const handleVendorSearch = async () => {
+    if (!vendorSearchQuery.trim()) {
+      alert('Please enter a search term')
+      return
+    }
+
+    setIsVendorSearching(true)
+    setShowVendorResults(false)
+
+    try {
+      const response = await fetch(`/api/search-vendors?q=${encodeURIComponent(vendorSearchQuery)}`)
+      const data = await response.json()
+
+      if (data.vendors && data.vendors.length > 0) {
+        setVendorSearchResults(data.vendors)
+        setShowVendorResults(true)
+        setShowResults(false) // Hide similarity search results
+        
+        // Scroll to results
+        setTimeout(() => {
+          document.getElementById('carousel')?.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+      } else {
+        alert('No vendors found. Try searching for "Ariadna" or "Mia"')
+      }
+    } catch (error) {
+      console.error('Vendor search error:', error)
+      alert('Failed to search vendors. Please try again.')
+    } finally {
+      setIsVendorSearching(false)
+    }
   }
 
   const scrollCarousel = (direction: 'left' | 'right') => {
@@ -357,6 +394,49 @@ export default function Home() {
                 </>
               )}
             </button>
+
+            {/* OR Divider */}
+            <div className="flex items-center my-8 sm:my-10">
+              <div className="flex-1 border-t border-black border-opacity-20"></div>
+              <span className="px-4 text-black text-sm font-medium pp-eiko">OR</span>
+              <div className="flex-1 border-t border-black border-opacity-20"></div>
+            </div>
+
+            {/* Vendor Search Section */}
+            <div className="max-w-md mx-auto">
+              <h3 className="text-lg sm:text-xl font-medium text-black mb-4 pp-eiko text-center">
+                Search by Nail Artist
+              </h3>
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={vendorSearchQuery}
+                  onChange={(e) => setVendorSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleVendorSearch()}
+                  placeholder="Search by name, location, or service..."
+                  className="flex-1 px-4 py-3 border-2 border-black border-opacity-20 rounded-full text-black placeholder-gray-500 focus:outline-none focus:border-black transition-colors"
+                />
+                <button
+                  onClick={handleVendorSearch}
+                  disabled={isVendorSearching}
+                  className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isVendorSearching ? (
+                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-600 mt-2 text-center">
+                Try: &quot;Ariadna&quot;, &quot;Mia&quot;, &quot;gel-x&quot;, &quot;Dallas&quot;, or &quot;acrylic&quot;
+              </p>
+            </div>
           </div>
 
           {/* Nails near you section */}
@@ -376,14 +456,18 @@ export default function Home() {
             )}
             
             <h2 className="text-2xl sm:text-3xl font-medium text-black mb-4 pp-eiko text-center">
-              {showResults ? "Results:" : "Nails near you:"}
+              {showResults ? "Similarity Results:" : showVendorResults ? "Vendor Search Results:" : "Nails near you:"}
             </h2>
             
             <div className="py-6 sm:py-8">
               <div ref={carouselRef} className="flex space-x-4 sm:space-x-6 overflow-x-auto pb-4 pt-4 pl-4 scroll-smooth">
-                {(showResults && searchResults.length > 0 ? searchResults : mockNailTechs).map((item, index) => {
-                  // Handle search results vs mock data
+                {(showResults && searchResults.length > 0 ? searchResults : 
+                  showVendorResults && vendorSearchResults.length > 0 ? vendorSearchResults : 
+                  mockNailTechs).map((item, index) => {
+                  // Handle different types of results
                   const isSearchResult = showResults && ('similarity' in item || 'score' in item);
+                  const isVendorResult = showVendorResults && 'vendor_name' in item;
+                  
                   const displayData = isSearchResult ? {
                     id: item.id || index.toString(),
                     name: item.vendor_name || item.vendor || 'Unknown Artist',
@@ -394,12 +478,28 @@ export default function Home() {
                     address: item.address || `123 Main St, ${item.vendor_location || 'Dallas, TX'}`,
                     website: item.website || item.vendor_website || `https://${(item.vendor_name || item.vendor || 'example').toLowerCase().replace(/\s+/g, '')}.com`,
                     booking_link: item.booking_link
+                  } : isVendorResult ? {
+                    id: item.id || index.toString(),
+                    name: item.vendor_name || 'Unknown Vendor',
+                    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
+                    rating: item.vendor_rating || '4.8',
+                    distance: '2.1 mi away', // Default distance
+                    location: `${item.city}, ${item.state}` || item.vendor_location || 'Dallas, TX',
+                    address: item.vendor_location || `123 Main St, ${item.city}, ${item.state}`,
+                    website: item.vendor_website || item.booking_link || '#',
+                    booking_link: item.booking_link || item.vendor_website
                   } : item;
 
                   return (
                     <div
                       key={displayData.id}
-                      className="flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative"
+                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isVendorResult ? 'cursor-pointer' : ''}`}
+                      onClick={isVendorResult ? () => {
+                        const artistId = item.vendor_name?.toLowerCase().includes('ariadna') ? 'ariadna' : 
+                                        item.vendor_name?.toLowerCase().includes('mia') ? 'mia' : 
+                                        item.id || 'ariadna'
+                        router.push(`/artist/${artistId}`)
+                      } : undefined}
                     >
                       {/* Image with padding and rounded corners - square aspect ratio */}
                       <div className="relative mb-3 sm:mb-4">
