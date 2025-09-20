@@ -58,6 +58,8 @@ export default function ArtistProfile() {
       
       if (imagesResponse.ok) {
         const imagesData = await imagesResponse.json()
+        console.log('🔍 DEBUG: Images data received:', imagesData)
+        console.log('🔍 DEBUG: First image URL:', imagesData.images?.[0]?.image_url)
         setImages(imagesData.images || [])
       }
       
