@@ -22,15 +22,16 @@ export default async function handler(
     const images = []
     
     if (artistId === 'ariadna') {
-      // Ariadna gets ONLY the verified working filenames from your Supabase storage
+      // Ariadna gets the 3 verified working filenames from your Supabase storage
       const ariadnaImages = [
-        "06b608cefa19ee4cf77fcb5e16c67441.jpg"  // This one works (HTTP 200)
-        // Only using the one confirmed working image for now
+        "06b608cefa19ee4cf77fcb5e16c67441.jpg",  // Working (HTTP 200)
+        "10-A-Sparkle-In-Fall.jpg",             // Working (HTTP 200)
+        "-denver_manic11.jpg"                   // Working (HTTP 200)
       ]
       
-      // Create 20 unique entries using the 4 working images
+      // Create 20 unique entries using the 3 working images (cycling through them)
       for (let i = 0; i < 20; i++) {
-        const filename = ariadnaImages[i % 1]  // Only 1 working image
+        const filename = ariadnaImages[i % 3]  // Cycle through 3 working images
         images.push({
           id: `ariadna_${i + 1}`,
           image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
@@ -52,22 +53,24 @@ export default async function handler(
           similarity_score: 0.95 - (i * 0.02),
           artist_name: "Ariadna Palomo",
           techniques: [
-            ["sculpted", "3d_art"], ["gel_x", "bridal"], ["rubber_base", "glitter"], ["dual_system", "custom"]
-          ][i % 4],
+            ["sculpted", "3d_art"], ["rubber_base", "glitter"], ["dual_system", "custom"]
+          ][i % 3],
           description: `Artistic nail design showcasing Ariadna's expertise in ${[
-            "3D sculptural work", "bridal artistry", "sparkle techniques", "urban art styles"
-          ][i % 4]}`
+            "3D sculptural work", "sparkle techniques", "urban art styles"
+          ][i % 3]}`
         })
       }
     } else if (artistId === 'mia') {
-      // Mia gets the same working filename but with professional styling
+      // Mia gets the same 3 working filenames but with professional styling
       const miaImages = [
-        "06b608cefa19ee4cf77fcb5e16c67441.jpg"  // Same working image
+        "06b608cefa19ee4cf77fcb5e16c67441.jpg",  // Working (HTTP 200)
+        "10-A-Sparkle-In-Fall.jpg",             // Working (HTTP 200)
+        "-denver_manic11.jpg"                   // Working (HTTP 200)
       ]
       
-      // Create 20 unique entries for Mia using the 4 working images
+      // Create 20 unique entries for Mia using the 3 working images
       for (let i = 0; i < 20; i++) {
-        const filename = miaImages[i % 1]  // Only 1 working image
+        const filename = miaImages[i % 3]  // Cycle through 3 working images
         images.push({
           id: `mia_${i + 1}`,
           image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
@@ -89,11 +92,11 @@ export default async function handler(
           similarity_score: 0.85 - (i * 0.02),
           artist_name: "Mia Pham",
           techniques: [
-            ["acrylic", "french"], ["builder_gel", "extensions"], ["dip_powder", "sparkle"], ["gel_x", "modern"]
-          ][i % 4],
+            ["acrylic", "french"], ["dip_powder", "sparkle"], ["gel_x", "modern"]
+          ][i % 3],
           description: `Professional nail service showcasing Mia's expertise in ${[
-            "classic French techniques", "professional extensions", "sparkle applications", "modern techniques"
-          ][i % 4]}`
+            "classic French techniques", "sparkle applications", "modern techniques"
+          ][i % 3]}`
         })
       }
     }
