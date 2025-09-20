@@ -98,7 +98,7 @@ function generateVendorImages(artistId: string, totalImages: number) {
         const imageId = `batch_${batch}_${index}`
         images.push({
           id: imageId,
-          image_url: `http://localhost:8000/images/${imageId}`, // Use backend image serving
+          image_url: `/api/images/${imageId}`, // Use frontend image proxy
           style: index === 0 ? "3D Sculptural Art" : "Complex Artistic Design",
           colors: index === 0 ? "Multi-color, Artistic" : "Dimensional, Mixed",
           filename: `${imageId}.jpg`,
@@ -118,7 +118,7 @@ function generateVendorImages(artistId: string, totalImages: number) {
         const imageId = `batch_${batch}_${index}`
         images.push({
           id: imageId,
-          image_url: `http://localhost:8000/images/${imageId}`, // Use backend image serving
+          image_url: `/api/images/${imageId}`, // Use frontend image proxy
           style: index === 1 ? "Classic French Manicure" : "Professional Extensions",
           colors: index === 1 ? "Natural, White, Pink" : "Nude, Clear, Natural",
           filename: `${imageId}.jpg`,
