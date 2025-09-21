@@ -34,20 +34,42 @@ export default async function handler(
 
     console.log(`🗑️ Deleting photo: ${filename} for artist: ${artistId}`)
 
-    // Delete from database (works with existing table structure)
+    // Delete from database with comprehensive error handling
     console.log(`🗑️ Attempting to delete ${filename} from database...`)
     
-    const { data: deleteData, error: deleteError } = await supabase
-      .from('nail_art_images')
-      .delete()
-      .eq('filename', filename)
-      .select()
+    try {
+      const { data: deleteData, error: deleteError } = await supabase
+        .from('nail_art_images')
+        .delete()
+        .eq('filename', filename)
+        .select()
 
-    if (deleteError) {
-      console.error('❌ Database delete error:', deleteError)
-      console.log('🔄 Continuing with storage deletion only...')
-    } else {
-      console.log(`✅ Removed from database: ${deleteData?.length || 0} records deleted`)
+      if (deleteError) {
+        console.error('❌ Database delete error details:', {
+          code: deleteError.code,
+          message: deleteError.message,
+          details: deleteError.details,
+          hint: deleteError.hint
+        })
+        
+        // Handle common database errors
+        if (deleteError.code === 'PGRST204') {
+          console.log('📋 Table not found - this is OK, will delete from storage only')
+        } else if (deleteError.code === '42P01') {
+          console.log('📋 Table does not exist - this is OK, will delete from storage only')
+        } else if (deleteError.code === 'PGRST116') {
+          console.log('📋 No rows found to delete - file may not be in database')
+        } else {
+          console.log('📋 Other database error - continuing with storage deletion')
+        }
+        
+        console.log('🔄 Continuing with storage deletion only...')
+      } else {
+        console.log(`✅ Removed from database: ${deleteData?.length || 0} records deleted`)
+      }
+    } catch (dbException) {
+      console.error('💥 Database delete exception:', dbException)
+      console.log('🔄 Database operation failed, continuing with storage deletion...')
     }
 
     // Optional: Also remove from storage (for testing - can be disabled for safety)

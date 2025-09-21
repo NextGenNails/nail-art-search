@@ -23,13 +23,34 @@ export default async function handler(
     console.log('🔍 Fetching actual images from your Supabase database...')
     
     // Query your nail_art_images table to get REAL filenames
+    console.log('🔍 Attempting to query nail_art_images table...')
+    
     const { data: images, error } = await supabase
       .from('nail_art_images')
       .select('filename, public_url, style, colors, artist')
       .limit(100) // Get up to 100 real images
     
     if (error) {
-      console.error('❌ Supabase query error:', error)
+      console.error('❌ Supabase query error details:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        requestUrl: 'nail_art_images table query'
+      })
+
+      // Handle specific error codes
+      if (error.code === 'PGRST204') {
+        console.log('📋 nail_art_images table not found in schema')
+      } else if (error.code === '42P01') {
+        console.log('📋 nail_art_images table does not exist')
+      } else if (error.code === '42703') {
+        console.log('📋 One or more columns do not exist in nail_art_images table')
+      } else if (error.code === 'PGRST301') {
+        console.log('📋 Permission denied - check RLS policies on nail_art_images table')
+      } else {
+        console.log('📋 Unknown database error - this may be a connection or schema issue')
+      }
       
       // If the table doesn't exist, try querying storage directly
       console.log('🔄 Trying to list files from storage bucket...')

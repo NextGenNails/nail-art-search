@@ -105,15 +105,42 @@ export default async function handler(
       // Removed fields that don't exist in your table: uploaded_at, upload_source, original_filename
     }
 
-    const { data: dbData, error: dbError } = await supabase
-      .from('nail_art_images')
-      .insert(imageMetadata)
-      .select()
+    // Try to save metadata to database with comprehensive error handling
+    try {
+      console.log('💾 Attempting to save metadata to database...')
+      console.log('📊 Metadata to save:', imageMetadata)
+      
+      const { data: dbData, error: dbError } = await supabase
+        .from('nail_art_images')
+        .insert(imageMetadata)
+        .select()
 
-    if (dbError) {
-      console.error('❌ Database insert error:', dbError)
-      // Don't fail - image is uploaded, just metadata missing
-      console.log('⚠️ Image uploaded but metadata not saved')
+      if (dbError) {
+        console.error('❌ Database insert error details:', {
+          code: dbError.code,
+          message: dbError.message,
+          details: dbError.details,
+          hint: dbError.hint
+        })
+        
+        // Common error handling
+        if (dbError.code === 'PGRST204') {
+          console.log('📋 Table not found - this is OK for testing')
+        } else if (dbError.code === '42703') {
+          console.log('📋 Column not found - this is OK for testing')
+        } else if (dbError.code === '42P01') {
+          console.log('📋 Table does not exist - this is OK for testing')
+        } else {
+          console.log('📋 Other database error - image still uploaded successfully')
+        }
+        
+        console.log('⚠️ Image uploaded to storage but metadata not saved to database')
+      } else {
+        console.log('✅ Metadata saved to database successfully!')
+      }
+    } catch (metadataError) {
+      console.error('💥 Metadata save exception:', metadataError)
+      console.log('⚠️ Image uploaded to storage but metadata save failed')
     }
 
     // Clean up temp file
