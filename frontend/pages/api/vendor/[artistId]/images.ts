@@ -74,19 +74,26 @@ export default async function handler(
     let uploadedImages: any[] = []
     if (supabase) {
       try {
+        console.log(`🔍 Querying database for ${artistId} uploaded images...`)
+        
         const { data: dbImages, error } = await supabase
           .from('nail_art_images')
-          .select('*')
+          .select('filename, public_url, artist, style, colors, file_size')
           .like('filename', `${artistId}_%`) // Get images uploaded for this artist
-          .is('deleted_at', null) // Exclude deleted images
 
-        if (!error && dbImages) {
+        if (error) {
+          console.error('❌ Database query error:', error)
+          console.log('📋 Using static portfolio due to database error')
+        } else if (dbImages) {
           uploadedImages = dbImages
           console.log(`📸 Found ${uploadedImages.length} uploaded images for ${artistId}`)
         }
       } catch (dbError) {
-        console.log('📋 Database query failed, using static portfolio')
+        console.error('💥 Database query exception:', dbError)
+        console.log('📋 Using static portfolio due to exception')
       }
+    } else {
+      console.log('⚠️ Supabase client not available, using static portfolio')
     }
     
     // Add uploaded images first (highest priority)
