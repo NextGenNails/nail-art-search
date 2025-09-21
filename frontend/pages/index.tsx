@@ -163,7 +163,32 @@ export default function Home() {
 
       const results = await response.json()
       console.log('🔍 Frontend received results:', results)
-      setSearchResults(results.results || results.matches || [])
+      
+      // Boost our vendors' scores to show them first
+      const rawResults = results.results || results.matches || []
+      const boostedResults = rawResults.map((result: any) => {
+        const vendorName = result.vendor_name || result.vendor || ''
+        
+        // Boost Ariadna and Mia's scores by 0.3 (30%)
+        if (vendorName.toLowerCase().includes('ariadna') || 
+            vendorName.toLowerCase().includes('palomo') ||
+            vendorName.toLowerCase().includes('mia') ||
+            vendorName.toLowerCase().includes('pham')) {
+          return {
+            ...result,
+            score: Math.min(1.0, (result.score || 0) + 0.3),
+            similarity: Math.min(1.0, (result.similarity || 0) + 0.3),
+            vendor_priority: true // Mark as priority vendor
+          }
+        }
+        return result
+      })
+      
+      // Sort by score (highest first) - our vendors will now appear first
+      boostedResults.sort((a: any, b: any) => (b.score || b.similarity || 0) - (a.score || a.similarity || 0))
+      
+      console.log('✅ Boosted our vendors in similarity results')
+      setSearchResults(boostedResults)
       setShowResults(true)
       
       // Scroll to carousel section to show results
