@@ -56,9 +56,11 @@ export default function VendorManage() {
   const loadPortfolioImages = async (id: string) => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/vendor/${id}/images`)
+      // Add cache busting to ensure fresh data after delete
+      const response = await fetch(`/api/vendor/${id}/images?t=${Date.now()}`)
       const data = await response.json()
       setImages(data.images || [])
+      console.log(`📊 Loaded ${data.images?.length || 0} images for ${id}`)
     } catch (error) {
       console.error('Failed to load portfolio:', error)
     } finally {
@@ -92,18 +94,23 @@ export default function VendorManage() {
         formData.append('file', file)
         formData.append('artistId', artistId as string)
 
+        console.log(`📤 Uploading: ${file.name} (${file.size} bytes)`)
+        
         const response = await fetch('/api/vendor/upload-photo', {
           method: 'POST',
           body: formData
         })
 
+        console.log(`📡 Upload response status: ${response.status}`)
+
         if (response.ok) {
-          console.log(`✅ Uploaded: ${file.name}`)
+          const successData = await response.json()
+          console.log(`✅ Uploaded: ${file.name}`, successData)
           setUploadProgress(((i + 1) / files.length) * 100)
         } else {
           const errorData = await response.json()
           console.error(`❌ Failed to upload: ${file.name}`, errorData)
-          alert(`Upload failed for ${file.name}: ${errorData.error || 'Unknown error'}`)
+          alert(`Upload failed for ${file.name}: ${errorData.error || 'Unknown error'}\n\nCheck console for details.`)
         }
       }
 

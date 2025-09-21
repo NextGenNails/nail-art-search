@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { createClient } from '@supabase/supabase-js'
 
-// Fast portfolio system - no expensive URL validation
-// Uses curated list of verified working nail art images
+// Fast portfolio system that checks actual database for uploaded/deleted images
+// Falls back to curated list for base portfolio
 
 const VERIFIED_NAIL_ART_IMAGES = [
   "marble-nails_480x480.jpg",
@@ -40,6 +41,15 @@ const PROFESSIONAL_STYLES = [
   "Color Coordination", "Trend Application"
 ]
 
+// Setup Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+let supabase: any = null
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey)
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -59,42 +69,80 @@ export default async function handler(
 
     const images = []
     const isAriadna = artistId === 'ariadna'
+
+    // First, try to get uploaded images from database
+    let uploadedImages: any[] = []
+    if (supabase) {
+      try {
+        const { data: dbImages, error } = await supabase
+          .from('nail_art_images')
+          .select('*')
+          .like('filename', `${artistId}_%`) // Get images uploaded for this artist
+          .is('deleted_at', null) // Exclude deleted images
+
+        if (!error && dbImages) {
+          uploadedImages = dbImages
+          console.log(`📸 Found ${uploadedImages.length} uploaded images for ${artistId}`)
+        }
+      } catch (dbError) {
+        console.log('📋 Database query failed, using static portfolio')
+      }
+    }
     
-    // Each artist gets unique images (no repeats)
-    const startIndex = isAriadna ? 0 : 9  // Ariadna: 0-8, Mia: 9-17
-    const imageCount = 9 // 9 unique images each
-    const styles = isAriadna ? ARTISTIC_STYLES : PROFESSIONAL_STYLES
-    const artistName = isAriadna ? "Ariadna Palomo" : "Mia Pham"
-    const techniques = isAriadna ? 
-      [["sculpted", "3d_art"], ["marble", "artistic"], ["gems", "luxury"]] :
-      [["acrylic", "professional"], ["gel_x", "extensions"], ["dip_powder", "classic"]]
-
-    for (let i = 0; i < imageCount; i++) {
-      const filename = VERIFIED_NAIL_ART_IMAGES[startIndex + i]
-      if (!filename) break // Safety check
-
+    // Add uploaded images first (highest priority)
+    uploadedImages.forEach((dbImage, index) => {
       images.push({
-        id: `${artistId}_${i + 1}`,
-        image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
-        style: styles[i] || `${isAriadna ? 'Artistic' : 'Professional'} Design`,
-        colors: isAriadna ? 
-          ["Multi-color Artistic", "Marble Elegance", "Gem Sparkle"][i % 3] :
-          ["Professional Natural", "Clean Application", "Classic Style"][i % 3],
-        filename: filename,
-        similarity_score: 0.95 - (i * 0.05),
-        artist_name: artistName,
-        techniques: techniques[i % 3],
-        description: `${isAriadna ? 'Artistic' : 'Professional'} nail design showcasing ${artistName.split(' ')[0]}'s expertise`
+        id: `uploaded_${dbImage.id}`,
+        image_url: dbImage.public_url,
+        style: dbImage.style || 'Custom Upload',
+        colors: dbImage.colors || 'Various',
+        filename: dbImage.filename,
+        similarity_score: 1.0 - (index * 0.01), // Uploaded images get highest scores
+        artist_name: dbImage.artist || (isAriadna ? "Ariadna Palomo" : "Mia Pham"),
+        techniques: ["custom", "uploaded"],
+        description: `Custom uploaded design${dbImage.original_filename ? ` (${dbImage.original_filename})` : ''}`
       })
+    })
+
+    // Add base portfolio images if we need more
+    const baseImagesNeeded = Math.max(0, 9 - uploadedImages.length)
+    if (baseImagesNeeded > 0) {
+      const startIndex = isAriadna ? 0 : 9  // Ariadna: 0-8, Mia: 9-17
+      const styles = isAriadna ? ARTISTIC_STYLES : PROFESSIONAL_STYLES
+      const artistName = isAriadna ? "Ariadna Palomo" : "Mia Pham"
+      const techniques = isAriadna ? 
+        [["sculpted", "3d_art"], ["marble", "artistic"], ["gems", "luxury"]] :
+        [["acrylic", "professional"], ["gel_x", "extensions"], ["dip_powder", "classic"]]
+
+      for (let i = 0; i < baseImagesNeeded; i++) {
+        const filename = VERIFIED_NAIL_ART_IMAGES[startIndex + i]
+        if (!filename) break // Safety check
+
+        images.push({
+          id: `base_${artistId}_${i + 1}`,
+          image_url: `https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`,
+          style: styles[i] || `${isAriadna ? 'Artistic' : 'Professional'} Design`,
+          colors: isAriadna ? 
+            ["Multi-color Artistic", "Marble Elegance", "Gem Sparkle"][i % 3] :
+            ["Professional Natural", "Clean Application", "Classic Style"][i % 3],
+          filename: filename,
+          similarity_score: 0.95 - (i * 0.05),
+          artist_name: artistName,
+          techniques: techniques[i % 3],
+          description: `${isAriadna ? 'Artistic' : 'Professional'} nail design showcasing ${artistName.split(' ')[0]}'s expertise`
+        })
+      }
     }
 
-    console.log(`✅ Fast portfolio: ${images.length} unique images for ${artistId} (no URL validation)`)
+    console.log(`✅ Portfolio: ${images.length} images for ${artistId} (${uploadedImages.length} uploaded + ${images.length - uploadedImages.length} base)`)
 
     res.status(200).json({
       artist_id: artistId,
       total_images: images.length,
+      uploaded_count: uploadedImages.length,
+      base_count: images.length - uploadedImages.length,
       images: images,
-      source: "fast_verified_images",
+      source: "dynamic_database_portfolio",
       loading_time: "optimized",
       unique_images: true
     })
