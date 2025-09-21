@@ -70,9 +70,9 @@ export default async function handler(
     }
 
     console.log(`📋 Serving vendor data for ${artistId}:`, {
-      name: vendor.vendor_name,
-      address: vendor.vendor_location,
-      phone: vendor.vendor_phone
+      name: (vendor as any).vendor_name,
+      address: (vendor as any).vendor_location,
+      phone: (vendor as any).vendor_phone
     })
     
     res.status(200).json({

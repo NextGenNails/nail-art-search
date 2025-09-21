@@ -8,16 +8,16 @@ const getSearchVendors = () => {
   
   return [
     {
-      ...ariadnaData,
+      ...ariadnaData!,
       search_score: 3.0,
       match_reasons: [] as string[]
     },
     {
-      ...miaData,
+      ...miaData!,
       search_score: 2.5,
       match_reasons: [] as string[]
     }
-  ].filter(Boolean) // Remove any null entries
+  ]
 }
 
 export default async function handler(
@@ -37,14 +37,14 @@ export default async function handler(
     // General query search
     if (q && typeof q === 'string') {
       results = results.filter(vendor => {
-        const searchText = `${vendor.vendor_name} ${vendor.city} ${vendor.instagram_handle} ${vendor.specialties.join(' ')}`.toLowerCase()
+        const searchText = `${(vendor as any).vendor_name} ${(vendor as any).city} ${(vendor as any).instagram_handle} ${(vendor as any).specialties?.join(' ') || ''}`.toLowerCase()
         return searchText.includes(q.toLowerCase())
       })
       
       // Update match reasons and scores
       results.forEach(vendor => {
         vendor.match_reasons = [`Name/info contains '${q}'`]
-        if (vendor.vendor_name.toLowerCase().includes(q.toLowerCase())) {
+        if (((vendor as any).vendor_name || '').toLowerCase().includes(q.toLowerCase())) {
           vendor.search_score = 3.0
         }
       })
@@ -53,13 +53,13 @@ export default async function handler(
     // Specific filters
     if (name && typeof name === 'string') {
       results = results.filter(vendor => 
-        vendor.vendor_name.toLowerCase().includes(name.toLowerCase())
+        ((vendor as any).vendor_name || '').toLowerCase().includes(name.toLowerCase())
       )
     }
     
     if (city && typeof city === 'string') {
       results = results.filter(vendor => 
-        vendor.city.toLowerCase().includes(city.toLowerCase())
+        ((vendor as any).city || '').toLowerCase().includes(city.toLowerCase())
       )
       results.forEach(vendor => {
         vendor.match_reasons.push(`City matches '${city}'`)
@@ -70,14 +70,14 @@ export default async function handler(
       const serviceList = services.split(',').map(s => s.trim().toLowerCase())
       results = results.filter(vendor => 
         serviceList.some(service => 
-          vendor.specialties.some(specialty => 
+          ((vendor as any).specialties || []).some((specialty: string) => 
             specialty.toLowerCase().includes(service) || service.includes(specialty.toLowerCase())
           )
         )
       )
       results.forEach(vendor => {
         const matchingServices = serviceList.filter(service =>
-          vendor.specialties.some(specialty => 
+          ((vendor as any).specialties || []).some((specialty: string) => 
             specialty.toLowerCase().includes(service) || service.includes(specialty.toLowerCase())
           )
         )
@@ -108,7 +108,7 @@ export default async function handler(
     
     if (instagram && typeof instagram === 'string') {
       results = results.filter(vendor => 
-        vendor.instagram_handle.toLowerCase().includes(instagram.toLowerCase())
+        ((vendor as any).instagram_handle || '').toLowerCase().includes(instagram.toLowerCase())
       )
     }
     
