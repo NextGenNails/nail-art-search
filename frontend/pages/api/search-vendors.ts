@@ -1,32 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { formatVendorForDisplay } from '../../lib/vendorData'
 
-// Mock vendor data for testing
-const mockVendors = [
-  {
-    vendor_name: "Onix Beauty Center - Ariadna Palomo",
-    city: "Dallas",
-    state: "TX",
-    instagram_handle: "@arizonailss",
-    specialties: ["acrylic", "gel_x", "polygel", "rubber_base", "dual_system", "sculpted", "3d_art", "custom_designs"],
-    price_range: "$$$",
-    booking_link: "https://instagram.com/arizonailss",
-    vendor_rating: "4.9",
-    search_score: 3.0,
-    match_reasons: [] as string[]
-  },
-  {
-    vendor_name: "Ivy's Nail and Lash - Mia Pham",
-    city: "Plano", 
-    state: "TX",
-    instagram_handle: "@Ivysnailandlash",
-    specialties: ["acrylic", "dip_powder", "builder_gel", "gel_x", "polygel", "solar_gel", "extensions", "manicure"],
-    price_range: "$$",
-    booking_link: "https://www.ivysnailandlash.com",
-    vendor_rating: "4.8",
-    search_score: 2.5,
-    match_reasons: [] as string[]
-  }
-]
+// Get vendor data from centralized source
+const getSearchVendors = () => {
+  const ariadnaData = formatVendorForDisplay('ariadna', 'search')
+  const miaData = formatVendorForDisplay('mia', 'search')
+  
+  return [
+    {
+      ...ariadnaData,
+      search_score: 3.0,
+      match_reasons: [] as string[]
+    },
+    {
+      ...miaData,
+      search_score: 2.5,
+      match_reasons: [] as string[]
+    }
+  ].filter(Boolean) // Remove any null entries
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -40,7 +32,7 @@ export default async function handler(
     const { q, name, city, services, price_range, availability, instagram } = req.query
     
     // Filter vendors based on query parameters
-    let results = [...mockVendors]
+    let results = getSearchVendors()
     
     // General query search
     if (q && typeof q === 'string') {

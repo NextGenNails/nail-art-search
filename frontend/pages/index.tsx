@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { formatVendorForDisplay } from '../lib/vendorData'
 
 interface NailTech {
   id: string
@@ -53,30 +54,10 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  // Real vendor data - show our actual nail techs first
+  // Real vendor data - using centralized data source for consistency
   const realVendors: NailTech[] = [
-    {
-      id: 'ariadna',
-      name: 'Ariadna Palomo',
-      distance: '2.1 mi away',
-      location: 'Dallas, TX',
-      rating: '4.9',
-      image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
-      address: '1234 Main Street, Suite 102, Dallas, TX 75201',
-      website: 'https://instagram.com/arizonailss',
-      booking_link: 'https://instagram.com/arizonailss'
-    },
-    {
-      id: 'mia',
-      name: 'Mia Pham',
-      distance: '3.2 mi away',
-      location: 'Plano, TX',
-      rating: '4.8',
-      image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
-      address: '5678 Preston Road, Suite 201, Plano, TX 75024',
-      website: 'https://www.ivysnailandlash.com',
-      booking_link: 'https://www.ivysnailandlash.com'
-    },
+    formatVendorForDisplay('ariadna', 'card') as NailTech,
+    formatVendorForDisplay('mia', 'card') as NailTech,
     {
       id: '2', 
       name: 'Luxe Nails Spa',
@@ -512,17 +493,17 @@ export default function Home() {
                     rating: item.score ? `${Math.round(item.score * 100)}%` : (item.similarity ? `${Math.round(item.similarity * 100)}%` : 'N/A'),
                     distance: item.vendor_distance || '',
                     location: item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''),
-                    address: item.address || `123 Main St, ${item.vendor_location || 'Dallas, TX'}`,
+                    address: item.address || item.vendor_location || `123 Main St, ${item.vendor_location || 'Dallas, TX'}`,
                     website: item.website || item.vendor_website || `https://${(item.vendor_name || item.vendor || 'example').toLowerCase().replace(/\s+/g, '')}.com`,
                     booking_link: item.booking_link
                   } : isVendorResult ? {
                     id: item.id || index.toString(),
-                    name: item.vendor_name || 'Unknown Vendor',
+                    name: item.vendor_name?.split(' - ')[1] || item.vendor_name || 'Unknown Vendor', // Show tech name only
                     image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
                     rating: item.vendor_rating || '4.8',
                     distance: '2.1 mi away', // Default distance
                     location: `${item.city}, ${item.state}` || item.vendor_location || 'Dallas, TX',
-                    address: item.vendor_location || `123 Main St, ${item.city}, ${item.state}`,
+                    address: item.vendor_location || `123 Main St, ${item.city}, ${item.state}`, // Use real address
                     website: item.vendor_website || item.booking_link || '#',
                     booking_link: item.booking_link || item.vendor_website
                   } : item;

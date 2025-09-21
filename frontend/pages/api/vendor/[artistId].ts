@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { formatVendorForDisplay } from '../../../lib/vendorData'
 
 // Mock vendor data
 const mockVendors = {
@@ -61,15 +62,23 @@ export default async function handler(
       return res.status(400).json({ error: 'Artist ID required' })
     }
     
-    const vendor = mockVendors[artistId as keyof typeof mockVendors]
+    // Use centralized vendor data for consistency
+    const vendor = formatVendorForDisplay(artistId, 'profile')
     
     if (!vendor) {
       return res.status(404).json({ error: 'Artist not found' })
     }
+
+    console.log(`📋 Serving vendor data for ${artistId}:`, {
+      name: vendor.vendor_name,
+      address: vendor.vendor_location,
+      phone: vendor.vendor_phone
+    })
     
     res.status(200).json({
       artist_id: artistId,
-      vendor: vendor
+      vendor: vendor,
+      source: "centralized_vendor_data"
     })
     
   } catch (error) {
