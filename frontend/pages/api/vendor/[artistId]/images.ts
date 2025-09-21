@@ -43,6 +43,19 @@ export default async function handler(
     // Get actual database images first
     const databaseImages = await getDatabaseImages()
     
+    // Filter out deleted images (check if they exist in storage)
+    const validImages = []
+    for (const filename of databaseImages.slice(0, 40)) { // Test first 40
+      try {
+        const response = await fetch(`https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/${filename}`, { method: 'HEAD' })
+        if (response.ok) {
+          validImages.push(filename)
+        }
+      } catch {
+        // Skip images that don't exist
+      }
+    }
+    
     // Using actual database filenames for portfolios
     const images = []
     

@@ -28,22 +28,19 @@ export default async function handler(
 
     console.log(`🗑️ Deleting photo: ${filename} for artist: ${artistId}`)
 
-    // Soft delete approach - mark as deleted in database instead of actually deleting
-    // This allows for recovery and maintains data integrity
-    const { data: updateData, error: updateError } = await supabase
+    // Since the database doesn't have soft delete columns yet, 
+    // we'll delete the record entirely for testing
+    const { data: deleteData, error: deleteError } = await supabase
       .from('nail_art_images')
-      .update({ 
-        deleted_at: new Date().toISOString(),
-        deleted_by: 'vendor_management',
-        status: 'deleted'
-      })
+      .delete()
       .eq('filename', filename)
       .select()
 
-    if (updateError) {
-      console.error('❌ Database update error:', updateError)
-      // Try alternative approach - delete from storage only
-      console.log('🔄 Trying storage deletion only...')
+    if (deleteError) {
+      console.error('❌ Database delete error:', deleteError)
+      console.log('🔄 Continuing with storage deletion only...')
+    } else {
+      console.log('✅ Removed from database')
     }
 
     // Optional: Also remove from storage (for testing - can be disabled for safety)
