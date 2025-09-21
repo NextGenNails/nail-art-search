@@ -101,7 +101,9 @@ export default function VendorManage() {
           console.log(`✅ Uploaded: ${file.name}`)
           setUploadProgress(((i + 1) / files.length) * 100)
         } else {
-          console.error(`❌ Failed to upload: ${file.name}`)
+          const errorData = await response.json()
+          console.error(`❌ Failed to upload: ${file.name}`, errorData)
+          alert(`Upload failed for ${file.name}: ${errorData.error || 'Unknown error'}`)
         }
       }
 

@@ -1,11 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
-// Supabase setup
+// Supabase setup with debugging
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+console.log('🔍 Delete API Environment check:', {
+  hasUrl: !!supabaseUrl,
+  hasKey: !!supabaseAnonKey
+})
+
 if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing Supabase environment variables in delete API')
   throw new Error('Missing Supabase environment variables')
 }
 

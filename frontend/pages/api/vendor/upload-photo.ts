@@ -10,11 +10,22 @@ export const config = {
   },
 }
 
-// Supabase setup
+// Supabase setup with better error handling
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+console.log('🔍 Environment check:', {
+  hasUrl: !!supabaseUrl,
+  hasKey: !!supabaseAnonKey,
+  urlLength: supabaseUrl?.length || 0,
+  keyLength: supabaseAnonKey?.length || 0
+})
+
 if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Missing Supabase environment variables:', {
+    NEXT_PUBLIC_SUPABASE_URL: !!supabaseUrl,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: !!supabaseAnonKey
+  })
   throw new Error('Missing Supabase environment variables')
 }
 
