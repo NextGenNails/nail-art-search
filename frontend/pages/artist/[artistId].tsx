@@ -174,7 +174,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
                 </div>
               </div>
               
-              <p className="text-black mb-3">{review.review_text}</p>
+              <p className="text-black mb-3" style={{ color: '#000000' }}>{review.review_text}</p>
               
               {review.review_photo_url && (
                 <div className="mt-3">
