@@ -34,8 +34,9 @@ export default async function handler(
 
     console.log(`🗑️ Deleting photo: ${filename} for artist: ${artistId}`)
 
-    // Since the database doesn't have soft delete columns yet, 
-    // we'll delete the record entirely for testing
+    // Delete from database (works with existing table structure)
+    console.log(`🗑️ Attempting to delete ${filename} from database...`)
+    
     const { data: deleteData, error: deleteError } = await supabase
       .from('nail_art_images')
       .delete()
@@ -46,7 +47,7 @@ export default async function handler(
       console.error('❌ Database delete error:', deleteError)
       console.log('🔄 Continuing with storage deletion only...')
     } else {
-      console.log('✅ Removed from database')
+      console.log(`✅ Removed from database: ${deleteData?.length || 0} records deleted`)
     }
 
     // Optional: Also remove from storage (for testing - can be disabled for safety)

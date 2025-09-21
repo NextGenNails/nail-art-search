@@ -94,17 +94,15 @@ export default async function handler(
 
     console.log(`🔗 Public URL: ${urlData.publicUrl}`)
 
-    // Add to database
+    // Add to database (using only columns that exist)
     const imageMetadata = {
       filename: uniqueFilename,
       public_url: urlData.publicUrl,
       artist: artistId === 'ariadna' ? 'Ariadna Palomo' : artistId === 'mia' ? 'Mia Pham' : artistId,
       style: 'Custom Upload',
       colors: 'Various',
-      file_size: file.size,
-      uploaded_at: new Date().toISOString(),
-      upload_source: 'vendor_management',
-      original_filename: file.originalFilename
+      file_size: file.size
+      // Removed fields that don't exist in your table: uploaded_at, upload_source, original_filename
     }
 
     const { data: dbData, error: dbError } = await supabase
