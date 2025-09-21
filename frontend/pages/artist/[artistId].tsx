@@ -71,7 +71,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+              <label className="block text-sm font-medium text-black mb-2">Your Name</label>
               <input
                 type="text"
                 name="clientName"
@@ -81,7 +81,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Service Date</label>
+              <label className="block text-sm font-medium text-black mb-2">Service Date</label>
               <input
                 type="date"
                 name="serviceDate"
@@ -92,7 +92,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+            <label className="block text-sm font-medium text-black mb-2">Rating</label>
             <div className="flex space-x-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <label key={star} className="cursor-pointer">
@@ -112,7 +112,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Review</label>
+            <label className="block text-sm font-medium text-black mb-2">Review</label>
             <textarea
               name="reviewText"
               placeholder="Share your experience..."
@@ -123,7 +123,7 @@ function ReviewsSection({ artistId }: { artistId: string }) {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Photo (Optional)</label>
+            <label className="block text-sm font-medium text-black mb-2">Photo (Optional)</label>
             <input
               type="file"
               name="reviewPhoto"

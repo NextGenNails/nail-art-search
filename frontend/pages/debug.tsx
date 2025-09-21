@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 
 export default function DebugPage() {
   const [envStatus, setEnvStatus] = useState<any>(null)
@@ -140,10 +141,10 @@ export default function DebugPage() {
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-black mb-4">Quick Links</h2>
             <div className="space-y-2">
-              <a href="/" className="block text-blue-600 hover:underline">← Back to Main App</a>
-              <a href="/vendor/ariadna/manage" className="block text-blue-600 hover:underline">Ariadna Management</a>
-              <a href="/vendor/mia/manage" className="block text-blue-600 hover:underline">Mia Management</a>
-              <a href="/artist/ariadna" className="block text-blue-600 hover:underline">Ariadna Profile</a>
+              <Link href="/" className="block text-blue-600 hover:underline">← Back to Main App</Link>
+              <Link href="/vendor/ariadna/manage" className="block text-blue-600 hover:underline">Ariadna Management</Link>
+              <Link href="/vendor/mia/manage" className="block text-blue-600 hover:underline">Mia Management</Link>
+              <Link href="/artist/ariadna" className="block text-blue-600 hover:underline">Ariadna Profile</Link>
             </div>
           </div>
         </div>
