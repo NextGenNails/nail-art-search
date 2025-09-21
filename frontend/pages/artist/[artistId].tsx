@@ -132,10 +132,12 @@ export default function ArtistProfile() {
           {/* Artist Header */}
           <div className="max-w-4xl mx-auto mb-12">
             <div className="text-center mb-8">
-              <h1 className="text-4xl sm:text-5xl font-medium text-black mb-4 pp-eiko">
+              {/* Tech Name as Main Title */}
+              <h1 className="text-4xl sm:text-5xl font-medium text-black mb-2 pp-eiko">
                 {vendor.vendor_name.split(' - ')[1] || vendor.vendor_name}
               </h1>
-              <h2 className="text-xl text-gray-600 mb-2">
+              {/* Salon Name as Subtitle */}
+              <h2 className="text-xl text-gray-500 mb-4 pp-eiko">
                 {vendor.vendor_name.split(' - ')[0]}
               </h2>
               <p className="text-lg text-gray-600">

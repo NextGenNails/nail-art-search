@@ -1,9 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
-// Supabase credentials from environment variables (with fallback for local development)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yejyxznoddkegbqzpuex.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllanl4em5vZGRrZWdicXpwdWV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3MzM1ODUsImV4cCI6MjA3MTMwOTU4NX0.NvZYKHzFRHuGCw37NTwFrP_CxABiBLka01IPFwuWLQY'
+// Supabase credentials from environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 

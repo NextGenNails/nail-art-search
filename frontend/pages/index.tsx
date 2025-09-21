@@ -53,17 +53,29 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  // Mock nail techs data - replace with real data later
-  const mockNailTechs: NailTech[] = [
+  // Real vendor data - show our actual nail techs first
+  const realVendors: NailTech[] = [
     {
-      id: '1',
-      name: 'Marissa',
-      distance: '1.6 mi away',
-      location: 'Richardson, TX',
+      id: 'ariadna',
+      name: 'Ariadna Palomo',
+      distance: '2.1 mi away',
+      location: 'Dallas, TX',
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=400&h=400&fit=crop&crop=center',
-      address: '123 Main St, Richardson, TX 75081',
-      website: 'https://marissanails.com'
+      image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
+      address: '1234 Main Street, Suite 102, Dallas, TX 75201',
+      website: 'https://instagram.com/arizonailss',
+      booking_link: 'https://instagram.com/arizonailss'
+    },
+    {
+      id: 'mia',
+      name: 'Mia Pham',
+      distance: '3.2 mi away',
+      location: 'Plano, TX',
+      rating: '4.8',
+      image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
+      address: '5678 Preston Road, Suite 201, Plano, TX 75024',
+      website: 'https://www.ivysnailandlash.com',
+      booking_link: 'https://www.ivysnailandlash.com'
     },
     {
       id: '2', 
@@ -463,7 +475,7 @@ export default function Home() {
               <div ref={carouselRef} className="flex space-x-4 sm:space-x-6 overflow-x-auto pb-4 pt-4 pl-4 scroll-smooth">
                 {(showResults && searchResults.length > 0 ? searchResults : 
                   showVendorResults && vendorSearchResults.length > 0 ? vendorSearchResults : 
-                  mockNailTechs).map((item, index) => {
+                  realVendors).map((item, index) => {
                   // Handle different types of results
                   const isSearchResult = showResults && ('similarity' in item || 'score' in item);
                   const isVendorResult = showVendorResults && 'vendor_name' in item;
@@ -493,12 +505,14 @@ export default function Home() {
                   return (
                     <div
                       key={displayData.id}
-                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isVendorResult ? 'cursor-pointer' : ''}`}
+                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isVendorResult || (!showResults && !showVendorResults) ? 'cursor-pointer' : ''}`}
                       onClick={isVendorResult ? () => {
                         const artistId = item.vendor_name?.toLowerCase().includes('ariadna') ? 'ariadna' : 
                                         item.vendor_name?.toLowerCase().includes('mia') ? 'mia' : 
                                         item.id || 'ariadna'
                         router.push(`/artist/${artistId}`)
+                      } : (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia')) ? () => {
+                        router.push(`/artist/${displayData.id}`)
                       } : undefined}
                     >
                       {/* Image with padding and rounded corners - square aspect ratio */}
