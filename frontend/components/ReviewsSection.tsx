@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface Review {
   id: string
@@ -17,12 +17,10 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedRating, setSelectedRating] = useState<number>(0)
+  const [hoveredRating, setHoveredRating] = useState<number>(0)
 
-  useEffect(() => {
-    loadReviews()
-  }, [artistId])
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       const response = await fetch(`/api/vendor/${artistId}/reviews`)
       const data = await response.json()
@@ -30,7 +28,11 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
     } catch (error) {
       console.error('Failed to load reviews:', error)
     }
-  }
+  }, [artistId])
+
+  useEffect(() => {
+    loadReviews()
+  }, [loadReviews])
 
   const submitReview = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -50,6 +52,7 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
         setShowReviewForm(false)
         loadReviews() // Reload reviews
         e.currentTarget.reset()
+        setSelectedRating(0) // Reset rating state
       } else {
         throw new Error('Review submission failed')
       }
@@ -106,20 +109,36 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
               <label className="block text-sm font-bold text-black mb-2">Rating</label>
               <div className="flex space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <label key={star} className="cursor-pointer">
-                    <input
-                      type="radio"
-                      name="rating"
-                      value={star}
-                      className="hidden peer"
-                      required
-                    />
-                    <span className="text-3xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400 transition-colors">
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setSelectedRating(star)}
+                    onMouseEnter={() => setHoveredRating(star)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    className="text-3xl transition-colors cursor-pointer focus:outline-none"
+                  >
+                    <span className={
+                      star <= (hoveredRating || selectedRating) 
+                        ? 'text-yellow-400' 
+                        : 'text-gray-300'
+                    }>
                       ⭐
                     </span>
-                  </label>
+                  </button>
                 ))}
+                {/* Hidden input for form submission */}
+                <input
+                  type="hidden"
+                  name="rating"
+                  value={selectedRating}
+                  required
+                />
               </div>
+              {selectedRating > 0 && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {selectedRating} out of 5 stars
+                </p>
+              )}
             </div>
 
             <div>

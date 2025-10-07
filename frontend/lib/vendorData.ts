@@ -150,7 +150,9 @@ export function formatVendorForDisplay(vendorId: string, context: 'card' | 'prof
         specialties: vendor.specialties,
         price_range: vendor.price_range,
         booking_link: vendor.booking_link,
-        vendor_website: vendor.website
+        vendor_website: vendor.website,
+        image: vendor.profile_image,
+        image_url: vendor.profile_image
       }
     
     default:

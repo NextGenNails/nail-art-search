@@ -145,28 +145,58 @@ export default function Home() {
       const results = await response.json()
       console.log('🔍 Frontend received results:', results)
       
-      // Boost our vendors' scores to show them first
-      const rawResults = results.results || results.matches || []
-      const boostedResults = rawResults.map((result: any) => {
-        const vendorName = result.vendor_name || result.vendor || ''
-        
-        // Boost Ariadna and Mia's scores by 0.3 (30%)
-        if (vendorName.toLowerCase().includes('ariadna') || 
-            vendorName.toLowerCase().includes('palomo') ||
-            vendorName.toLowerCase().includes('mia') ||
-            vendorName.toLowerCase().includes('pham')) {
-          return {
-            ...result,
-            score: Math.min(1.0, (result.score || 0) + 0.3),
-            similarity: Math.min(1.0, (result.similarity || 0) + 0.3),
-            vendor_priority: true // Mark as priority vendor
-          }
+      // Create priority vendor results with their portfolio images
+      const priorityVendors = [
+        {
+          id: 'priority_ariadna',
+          vendor_name: 'Ariadna Palomo',
+          vendor: 'Ariadna Palomo',
+          vendor_location: 'Dallas, TX',
+          vendor_distance: '2.1 mi',
+          image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
+          image_url: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
+          score: 0.98,
+          similarity: 0.98,
+          vendor_priority: true,
+          style: '3D Sculptural Art',
+          colors: 'Multi-color Artistic',
+          filename: 'marble-nails_480x480.jpg',
+          booking_link: 'https://instagram.com/arizonailss',
+          website: 'https://instagram.com/arizonailss',
+          address: '1234 Main Street, Suite 102, Dallas, TX 75201'
+        },
+        {
+          id: 'priority_mia',
+          vendor_name: 'Mia Pham',
+          vendor: 'Mia Pham',
+          vendor_location: 'Plano, TX',
+          vendor_distance: '3.2 mi',
+          image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
+          image_url: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
+          score: 0.96,
+          similarity: 0.96,
+          vendor_priority: true,
+          style: 'Professional Gem Application',
+          colors: 'Professional Natural',
+          filename: 'Nail_Art_with_Gems_480x480.jpg',
+          booking_link: 'https://www.ivysnailandlash.com',
+          website: 'https://www.ivysnailandlash.com',
+          address: '5678 Preston Road, Suite 201, Plano, TX 75024'
         }
-        return result
+      ]
+      
+      // Get other results and filter out any existing Ariadna/Mia results to avoid duplicates
+      const rawResults = results.results || results.matches || []
+      const otherResults = rawResults.filter((result: any) => {
+        const vendorName = (result.vendor_name || result.vendor || '').toLowerCase()
+        return !vendorName.includes('ariadna') && 
+               !vendorName.includes('palomo') && 
+               !vendorName.includes('mia') && 
+               !vendorName.includes('pham')
       })
       
-      // Sort by score (highest first) - our vendors will now appear first
-      boostedResults.sort((a: any, b: any) => (b.score || b.similarity || 0) - (a.score || a.similarity || 0))
+      // Combine priority vendors first, then other results
+      const boostedResults = [...priorityVendors, ...otherResults]
       
       console.log('✅ Boosted our vendors in similarity results')
       setSearchResults(boostedResults)

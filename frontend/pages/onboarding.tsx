@@ -144,7 +144,7 @@ export default function Onboarding() {
                     className="block hover:opacity-80 transition-opacity cursor-pointer"
                   >
                     <img 
-                      src="/onboarding-qr.png" 
+                      src="/naild_qrcode.png" 
                       alt="QR Code to apply as featured tech"
                       className="w-48 h-48 border-2 border-gray-300 rounded-lg"
                     />
