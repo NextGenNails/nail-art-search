@@ -538,18 +538,33 @@ export default function Home() {
                     booking_link: item.booking_link || item.vendor_website
                   } : item;
 
+                  // Determine if this card should be clickable and get the artist ID
+                  const getArtistId = () => {
+                    // For image search results with our priority vendors
+                    if (isSearchResult && item.vendor_priority) {
+                      return item.id === 'priority_ariadna' ? 'ariadna' : 'mia'
+                    }
+                    // For vendor search results
+                    if (isVendorResult) {
+                      return item.vendor_name?.toLowerCase().includes('ariadna') ? 'ariadna' : 
+                             item.vendor_name?.toLowerCase().includes('mia') ? 'mia' : 
+                             item.id || 'ariadna'
+                    }
+                    // For default vendor cards
+                    if (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia')) {
+                      return displayData.id
+                    }
+                    return null
+                  }
+
+                  const artistId = getArtistId()
+                  const isClickable = !!artistId
+
                   return (
                     <div
                       key={displayData.id}
-                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isVendorResult || (!showResults && !showVendorResults) ? 'cursor-pointer' : ''}`}
-                      onClick={isVendorResult ? () => {
-                        const artistId = item.vendor_name?.toLowerCase().includes('ariadna') ? 'ariadna' : 
-                                        item.vendor_name?.toLowerCase().includes('mia') ? 'mia' : 
-                                        item.id || 'ariadna'
-                        router.push(`/artist/${artistId}`)
-                      } : (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia')) ? () => {
-                        router.push(`/artist/${displayData.id}`)
-                      } : undefined}
+                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isClickable ? 'cursor-pointer' : ''}`}
+                      onClick={isClickable ? () => router.push(`/artist/${artistId}`) : undefined}
                     >
                       {/* Image with padding and rounded corners - square aspect ratio */}
                       <div className="relative mb-3 sm:mb-4">
