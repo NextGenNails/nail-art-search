@@ -76,18 +76,24 @@ export default async function handler(
     const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
     
     try {
-      const backendResponse = await fetch('http://localhost:8000/search', {
+      const backendUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://nail-art-search-production.up.railway.app/search'
+        : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/search'
+      
+      const backendResponse = await fetch(backendUrl, {
         method: 'POST',
         body: formData,
         signal: controller.signal,
       })
 
       clearTimeout(timeoutId)
+      console.log(`📡 Backend URL: ${backendUrl}`)
       console.log(`📡 Backend response status: ${backendResponse.status}`)
 
       if (!backendResponse.ok) {
         const errorText = await backendResponse.text()
         console.error(`❌ Backend error: ${backendResponse.status} - ${errorText}`)
+        console.error(`❌ Backend URL was: ${backendUrl}`)
         throw new Error(`Backend error: ${backendResponse.status} - ${errorText}`)
       }
 
