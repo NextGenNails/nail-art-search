@@ -154,8 +154,32 @@ export default function Home() {
       
       console.log('🏪 Dynamic vendor results:', dynamicVendorResults)
       
-      // Use dynamic vendor results (each vendor shows their most similar image)
-      setSearchResults(dynamicVendorResults)
+      // Fallback: if no vendor results, show raw results as individual items
+      let finalResults = dynamicVendorResults
+      if (dynamicVendorResults.length === 0 && rawResults.length > 0) {
+        console.log('⚠️  No vendor groups found, showing individual results')
+        finalResults = rawResults.map((result: any, index: number) => ({
+          id: `fallback_${index}`,
+          vendor_name: result.vendor_name || 'Nail Artist',
+          vendor: result.vendor_name || 'Nail Artist',
+          vendor_location: result.vendor_location || 'Dallas, TX',
+          vendor_distance: result.vendor_distance || '2.1 mi',
+          image: result.image_url || result.image,
+          image_url: result.image_url || result.image,
+          score: result.score || result.similarity || 0,
+          similarity: result.score || result.similarity || 0,
+          style: result.style || 'Custom Design',
+          colors: result.colors || 'Multi-color',
+          filename: result.filename,
+          booking_link: result.booking_link,
+          website: result.vendor_website || result.website,
+          address: result.vendor_location || result.address,
+          vendor_rating: result.vendor_rating
+        }))
+      }
+      
+      // Use final results (vendor groups or individual fallback)
+      setSearchResults(finalResults)
       setShowResults(true)
       
       // Scroll to carousel section to show results
