@@ -674,7 +674,7 @@ export default function Home() {
                     <div className="w-full h-64 sm:h-72 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl flex items-center justify-center">
                       <div className="text-center">
                         <div className="text-4xl sm:text-5xl mb-2">💼</div>
-                        <div className="text-lg sm:text-xl font-medium text-white pp-eiko">Join Nail'd</div>
+                        <div className="text-lg sm:text-xl font-medium text-white pp-eiko">Join Nail&apos;d</div>
                       </div>
                     </div>
                     {/* Badge matching vendor cards */}

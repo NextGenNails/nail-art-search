@@ -287,7 +287,7 @@ export default function UploadPage() {
                     <div className="aspect-square bg-gradient-to-br from-gray-200 to-gray-300 relative flex items-center justify-center">
                       <div className="text-center">
                         <div className="text-4xl mb-2">💼</div>
-                        <div className="text-lg font-medium text-gray-700">Join Nail'd</div>
+                        <div className="text-lg font-medium text-gray-700">Join Nail&apos;d</div>
                       </div>
                       <div className="absolute top-2 right-2 bg-gray-900 text-white px-2 py-1 rounded text-sm font-medium">
                         New
