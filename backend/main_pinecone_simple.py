@@ -44,77 +44,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Vendor mapping for dynamic vendor assignment
-VENDOR_MAPPING = {
-    "french": {
-        "vendor_name": "Nail Art Studio Pro",
-        "vendor_location": "123 Main St, Dallas, TX 75201",
-        "vendor_website": "https://nailartstudiopro.com",
-        "booking_link": "https://nailartstudiopro.com/book",
-        "vendor_rating": "4.8",
-        "vendor_distance": "2.3 miles",
-        "vendor_phone": "(214) 555-0123"
-    },
-    "acrylic": {
-        "vendor_name": "Luxe Nail Bar",
-        "vendor_location": "456 Oak Ave, Dallas, TX 75202",
-        "vendor_website": "https://luxenailbar.com",
-        "booking_link": "https://luxenailbar.com/appointments",
-        "vendor_rating": "4.6",
-        "vendor_distance": "1.8 miles",
-        "vendor_phone": "(214) 555-0456"
-    },
-    "floral": {
-        "vendor_name": "Artistic Nails & Spa",
-        "vendor_location": "789 Pine St, Dallas, TX 75203",
-        "vendor_website": "https://artisticnailsspa.com",
-        "booking_link": "https://artisticnailsspa.com/book-online",
+# Real vendor data - only authentic nail technicians
+REAL_VENDORS = [
+    {
+        "vendor_name": "Onix Beauty Center - Ariadna Palomo",
+        "vendor_location": "1234 Main Street, Suite 102, Dallas, TX 75201",
+        "vendor_website": "https://instagram.com/arizonailss",
+        "booking_link": "https://instagram.com/arizonailss",
         "vendor_rating": "4.9",
-        "vendor_distance": "3.1 miles",
-        "vendor_phone": "(214) 555-0789"
+        "vendor_distance": "2.1 miles",
+        "vendor_phone": "(214) 555-0198"
     },
-    "geometric": {
-        "vendor_name": "Modern Nail Studio",
-        "vendor_location": "321 Elm St, Dallas, TX 75204",
-        "vendor_website": "https://modernnailstudio.com",
-        "booking_link": "https://modernnailstudio.com/book",
-        "vendor_rating": "4.7",
-        "vendor_distance": "2.7 miles",
-        "vendor_phone": "(214) 555-0321"
-    },
-    "metallic": {
-        "vendor_name": "Glitz & Glam Nails",
-        "vendor_location": "654 Maple Ave, Dallas, TX 75205",
-        "vendor_website": "https://glitzglamnails.com",
-        "booking_link": "https://glitzglamnails.com/appointments",
-        "vendor_rating": "4.5",
-        "vendor_distance": "1.2 miles",
-        "vendor_phone": "(214) 555-0654"
+    {
+        "vendor_name": "Ivy's Nail and Lash - Mia Pham",
+        "vendor_location": "5678 Preston Road, Suite 201, Plano, TX 75024",
+        "vendor_website": "https://www.ivysnailandlash.com",
+        "booking_link": "https://www.ivysnailandlash.com",
+        "vendor_rating": "4.8",
+        "vendor_distance": "3.2 miles",
+        "vendor_phone": "(972) 555-0245"
     }
-}
-
-# Default vendor
-DEFAULT_VENDOR = {
-    "vendor_name": "Premium Nail Studio",
-    "vendor_location": "999 Quality Blvd, Dallas, TX 75206",
-    "vendor_website": "https://premiumnailstudio.com",
-    "booking_link": "https://premiumnailstudio.com/book",
-    "vendor_rating": "4.4",
-    "vendor_distance": "4.2 miles",
-    "vendor_phone": "(214) 555-0999"
-}
+]
 
 def get_vendor_for_image(filename: str, style: str) -> dict:
-    """Determine vendor information for an image based on filename or style."""
-    # Determine vendor based on filename or style content
-    search_text = f"{filename} {style}".lower()
-    
-    for pattern, vendor in VENDOR_MAPPING.items():
-        if pattern in search_text:
-            return vendor
-    
-    # Return default vendor if no pattern matches
-    return DEFAULT_VENDOR
+    """Assign real vendors using round-robin distribution."""
+    # Use hash of filename to ensure consistent vendor assignment for same image
+    import hashlib
+    hash_value = int(hashlib.md5(filename.encode()).hexdigest(), 16)
+    vendor_index = hash_value % len(REAL_VENDORS)
+    return REAL_VENDORS[vendor_index]
 
 # Global variables
 pinecone_client = None

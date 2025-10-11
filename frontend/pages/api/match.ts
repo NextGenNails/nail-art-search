@@ -76,7 +76,7 @@ export default async function handler(
     const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
     
     try {
-      const backendResponse = await fetch('https://nail-art-search-production.up.railway.app/search', {
+      const backendResponse = await fetch('http://localhost:8000/search', {
         method: 'POST',
         body: formData,
         signal: controller.signal,

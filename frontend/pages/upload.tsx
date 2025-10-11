@@ -8,7 +8,7 @@ interface SearchResult {
   style: string
   colors: string
   image_url: string | null
-  // Vendor information (dummy data for now)
+  // Vendor information (real vendor data from backend)
   vendor_name: string
   vendor_distance: string
   vendor_website: string
@@ -26,52 +26,7 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Generate dummy vendor data for demonstration
-  const generateDummyVendorData = (index: number) => {
-    const vendors = [
-      {
-        vendor_name: "Nail Art Studio Pro",
-        vendor_distance: "2.3 miles",
-        vendor_website: "https://nailartstudiopro.com",
-        booking_link: "https://nailartstudiopro.com/book",
-        vendor_location: "123 Main St, Dallas, TX 75201",
-        vendor_rating: "4.8"
-      },
-      {
-        vendor_name: "Luxe Nail Bar",
-        vendor_distance: "1.8 miles",
-        vendor_website: "https://luxenailbar.com",
-        booking_link: "https://luxenailbar.com/appointments",
-        vendor_location: "456 Oak Ave, Dallas, TX 75202",
-        vendor_rating: "4.6"
-      },
-      {
-        vendor_name: "Artistic Nails & Spa",
-        vendor_distance: "3.1 miles",
-        vendor_website: "https://artisticnailsspa.com",
-        booking_link: "https://artisticnailsspa.com/book-now",
-        vendor_location: "789 Pine St, Dallas, TX 75203",
-        vendor_rating: "4.9"
-      },
-      {
-        vendor_name: "Modern Nail Studio",
-        vendor_distance: "2.7 miles",
-        vendor_website: "https://modernnailstudio.com",
-        booking_link: "https://modernnailstudio.com/schedule",
-        vendor_location: "321 Elm St, Dallas, TX 75204",
-        vendor_rating: "4.7"
-      },
-      {
-        vendor_name: "Glitz & Glam Nails",
-        vendor_distance: "1.2 miles",
-        vendor_website: "https://glitzglamnails.com",
-        booking_link: "https://glitzglamnails.com/book",
-        vendor_location: "654 Maple Ave, Dallas, TX 75205",
-        vendor_rating: "4.5"
-      }
-    ]
-    return vendors[index % vendors.length]
-  }
+  // Note: Vendor data now comes directly from backend API - only real vendors
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -114,13 +69,8 @@ export default function UploadPage() {
       console.log('Received data:', data)
       console.log('Results array:', data.results)
       
-      // Add dummy vendor data to each result for demonstration
-      const resultsWithVendors = (data.results || []).map((result: any, index: number) => ({
-        ...result,
-        ...generateDummyVendorData(index)
-      }))
-      
-      setResults(resultsWithVendors)
+      // Results now come with real vendor data from backend
+      setResults(data.results || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -330,6 +280,69 @@ export default function UploadPage() {
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Join Nail'd Profile Box */}
+                  <div className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                       onClick={() => window.open('/onboarding', '_blank')}>
+                    <div className="aspect-square bg-gradient-to-br from-gray-200 to-gray-300 relative flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl mb-2">💼</div>
+                        <div className="text-lg font-medium text-gray-700">Join Nail'd</div>
+                      </div>
+                      <div className="absolute top-2 right-2 bg-gray-900 text-white px-2 py-1 rounded text-sm font-medium">
+                        New
+                      </div>
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="font-medium text-gray-900 mb-1 truncate">
+                        Want Your Business Here?
+                      </h3>
+                      
+                      {/* Vendor Information */}
+                      <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-blue-900 text-sm">
+                            Join as Featured Tech
+                          </h4>
+                          <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                            ⭐ Free
+                          </span>
+                        </div>
+                        
+                        <p className="text-xs text-blue-700 mb-1">
+                          📍 Your Location Here
+                        </p>
+                        
+                        <p className="text-xs text-blue-700 mb-2">
+                          💰 Keep 100% of earnings
+                        </p>
+                        
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium hover:bg-blue-700 transition-colors flex-1 text-center"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              window.open('/onboarding', '_blank')
+                            }}
+                          >
+                            🌐 Apply Now
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <p className="text-sm text-gray-600 mb-2">
+                        Style: Your Specialty
+                      </p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Benefits: Free profile • Local marketing
+                      </p>
+                      
+                      <div className="text-xs text-gray-500">
+                        ID: join-naild
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

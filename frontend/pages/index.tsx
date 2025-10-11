@@ -665,6 +665,50 @@ export default function Home() {
                     </div>
                   )
                 })}
+                
+                {/* Join Nail'd Profile Box */}
+                <div className="flex-none w-72 sm:w-80 bg-gray-900 rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative overflow-hidden cursor-pointer"
+                     onClick={() => window.open('/onboarding', '_blank')}>
+                  {/* Image area with gradient background */}
+                  <div className="relative mb-3 sm:mb-4">
+                    <div className="w-full h-64 sm:h-72 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl sm:text-5xl mb-2">💼</div>
+                        <div className="text-lg sm:text-xl font-medium text-white pp-eiko">Join Nail'd</div>
+                      </div>
+                    </div>
+                    {/* Badge matching vendor cards */}
+                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-black bg-opacity-60 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
+                      New
+                    </div>
+                  </div>
+                  
+                  {/* Content layout matching vendor cards */}
+                  <div className="relative flex flex-col h-28 sm:h-32">
+                    {/* Name */}
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="text-lg sm:text-xl font-medium text-white pp-eiko truncate pr-2">Want Your Business Here?</h3>
+                    </div>
+                    
+                    {/* Distance and location */}
+                    <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 flex-1">
+                      Free profile • Keep 100% of earnings
+                    </p>
+                    
+                    {/* Buttons - bottom right, horizontal */}
+                    <div className="flex justify-end items-center space-x-2 mt-auto">
+                      <button 
+                        className="bg-gray-700 text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-600 transition-colors h-8 sm:h-9"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          window.open('/onboarding', '_blank')
+                        }}
+                      >
+                        Join Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               {/* Navigation arrows - moved below and aligned right */}
