@@ -109,8 +109,10 @@ export default function Home() {
       const rawResults = results.results || results.matches || []
       console.log('📊 Raw results:', rawResults)
       
-      // Group results by vendor name
+      // Group results by vendor name and ensure unique images per vendor
       const vendorGroups: { [key: string]: any[] } = {}
+      const usedImages = new Set<string>() // Track used image URLs to avoid duplicates
+      
       rawResults.forEach((result: any) => {
         const vendorName = result.vendor_name || 'Unknown Vendor'
         if (!vendorGroups[vendorName]) {
@@ -119,7 +121,7 @@ export default function Home() {
         vendorGroups[vendorName].push(result)
       })
       
-      // Create vendor results with their most similar image
+      // Create vendor results with their most similar unique image
       const dynamicVendorResults = Object.entries(vendorGroups).map(([vendorName, vendorResults]) => {
         // Sort by similarity/score to get the most similar image
         const sortedResults = vendorResults.sort((a, b) => {
@@ -128,8 +130,25 @@ export default function Home() {
           return scoreB - scoreA
         })
         
-        const bestResult = sortedResults[0]
-        console.log(`🎯 Best result for ${vendorName}:`, bestResult)
+        // Find the best result that hasn't been used by another vendor
+        let bestResult = sortedResults[0]
+        for (const result of sortedResults) {
+          const imageUrl = result.image_url || result.image
+          if (imageUrl && !usedImages.has(imageUrl)) {
+            bestResult = result
+            usedImages.add(imageUrl) // Mark this image as used
+            break
+          }
+        }
+        
+        // If all images are used, fall back to the highest scoring one
+        if (!bestResult) {
+          bestResult = sortedResults[0]
+          const imageUrl = bestResult.image_url || bestResult.image
+          if (imageUrl) usedImages.add(imageUrl)
+        }
+        
+        console.log(`🎯 Best unique result for ${vendorName}:`, bestResult)
         
         return {
           id: `dynamic_${vendorName.toLowerCase().replace(/\s+/g, '_')}`,
