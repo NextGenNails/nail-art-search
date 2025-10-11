@@ -145,61 +145,57 @@ export default function Home() {
       const results = await response.json()
       console.log('🔍 Frontend received results:', results)
       
-      // Create priority vendor results with their portfolio images
-      const priorityVendors = [
-        {
-          id: 'priority_ariadna',
-          vendor_name: 'Ariadna Palomo',
-          vendor: 'Ariadna Palomo',
-          vendor_location: 'Dallas, TX',
-          vendor_distance: '2.1 mi',
-          image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
-          image_url: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg',
-          score: 0.98,
-          similarity: 0.98,
-          vendor_priority: true,
-          style: '3D Sculptural Art',
-          colors: 'Multi-color Artistic',
-          filename: 'marble-nails_480x480.jpg',
-          booking_link: 'https://instagram.com/arizonailss',
-          website: 'https://instagram.com/arizonailss',
-          address: '1234 Main Street, Suite 102, Dallas, TX 75201'
-        },
-        {
-          id: 'priority_mia',
-          vendor_name: 'Mia Pham',
-          vendor: 'Mia Pham',
-          vendor_location: 'Plano, TX',
-          vendor_distance: '3.2 mi',
-          image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
-          image_url: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg',
-          score: 0.96,
-          similarity: 0.96,
-          vendor_priority: true,
-          style: 'Professional Gem Application',
-          colors: 'Professional Natural',
-          filename: 'Nail_Art_with_Gems_480x480.jpg',
-          booking_link: 'https://www.ivysnailandlash.com',
-          website: 'https://www.ivysnailandlash.com',
-          address: '5678 Preston Road, Suite 201, Plano, TX 75024'
-        }
-      ]
-      
-      // Get other results and filter out any existing Ariadna/Mia results to avoid duplicates
+      // Group search results by vendor and pick the most similar image for each vendor
       const rawResults = results.results || results.matches || []
-      const otherResults = rawResults.filter((result: any) => {
-        const vendorName = (result.vendor_name || result.vendor || '').toLowerCase()
-        return !vendorName.includes('ariadna') && 
-               !vendorName.includes('palomo') && 
-               !vendorName.includes('mia') && 
-               !vendorName.includes('pham')
+      console.log('📊 Raw results:', rawResults)
+      
+      // Group results by vendor name
+      const vendorGroups: { [key: string]: any[] } = {}
+      rawResults.forEach((result: any) => {
+        const vendorName = result.vendor_name || 'Unknown Vendor'
+        if (!vendorGroups[vendorName]) {
+          vendorGroups[vendorName] = []
+        }
+        vendorGroups[vendorName].push(result)
       })
       
-      // Combine priority vendors first, then other results
-      const boostedResults = [...priorityVendors, ...otherResults]
+      // Create vendor results with their most similar image
+      const dynamicVendorResults = Object.entries(vendorGroups).map(([vendorName, vendorResults]) => {
+        // Sort by similarity/score to get the most similar image
+        const sortedResults = vendorResults.sort((a, b) => {
+          const scoreA = a.score || a.similarity || 0
+          const scoreB = b.score || b.similarity || 0
+          return scoreB - scoreA
+        })
+        
+        const bestResult = sortedResults[0]
+        console.log(`🎯 Best result for ${vendorName}:`, bestResult)
+        
+        return {
+          id: `dynamic_${vendorName.toLowerCase().replace(/\s+/g, '_')}`,
+          vendor_name: vendorName,
+          vendor: vendorName,
+          vendor_location: bestResult.vendor_location || 'Dallas, TX',
+          vendor_distance: bestResult.vendor_distance || '2.1 mi',
+          image: bestResult.image_url || bestResult.image,
+          image_url: bestResult.image_url || bestResult.image,
+          score: bestResult.score || bestResult.similarity || 0,
+          similarity: bestResult.score || bestResult.similarity || 0,
+          vendor_priority: true,
+          style: bestResult.style || 'Custom Design',
+          colors: bestResult.colors || 'Multi-color',
+          filename: bestResult.filename,
+          booking_link: bestResult.booking_link,
+          website: bestResult.vendor_website || bestResult.website,
+          address: bestResult.vendor_location || bestResult.address,
+          vendor_rating: bestResult.vendor_rating
+        }
+      })
       
-      console.log('✅ Boosted our vendors in similarity results')
-      setSearchResults(boostedResults)
+      console.log('🏪 Dynamic vendor results:', dynamicVendorResults)
+      
+      // Use dynamic vendor results (each vendor shows their most similar image)
+      setSearchResults(dynamicVendorResults)
       setShowResults(true)
       
       // Scroll to carousel section to show results
