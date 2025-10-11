@@ -54,50 +54,10 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
-  // Real vendor data - using centralized data source for consistency
+  // Real vendor data - only authentic nail technicians
   const realVendors: NailTech[] = [
     formatVendorForDisplay('ariadna', 'card') as NailTech,
-    formatVendorForDisplay('mia', 'card') as NailTech,
-    {
-      id: '2', 
-      name: 'Luxe Nails Spa',
-      distance: '2.1 mi away',
-      location: 'Plano, TX',
-      rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400&h=400&fit=crop&crop=center',
-      address: '456 Oak Ave, Plano, TX 75024',
-      website: 'https://luxenailsspa.com'
-    },
-    {
-      id: '3',
-      name: 'Bella Nails Studio',
-      distance: '2.8 mi away', 
-      location: 'Dallas, TX',
-      rating: '4.8',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
-      address: '789 Elm St, Dallas, TX 75201',
-      website: 'https://bellanailsstudio.com'
-    },
-    {
-      id: '4',
-      name: 'Glamour Nails',
-      distance: '3.2 mi away',
-      location: 'Frisco, TX', 
-      rating: '4.7',
-      image: 'https://images.unsplash.com/photo-1583847645687-4770c01bec81?w=400&h=400&fit=crop&crop=center',
-      address: '321 Pine Dr, Frisco, TX 75034',
-      website: 'https://glamournails.com'
-    },
-    {
-      id: '5',
-      name: 'Chic Nail Bar',
-      distance: '1.9 mi away',
-      location: 'Allen, TX',
-      rating: '4.9', 
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
-      address: '567 Cedar Ln, Allen, TX 75013',
-      website: 'https://chicnailbar.com'
-    }
+    formatVendorForDisplay('mia', 'card') as NailTech
   ]
 
   // Close dropdown when clicking outside
