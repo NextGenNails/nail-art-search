@@ -116,19 +116,28 @@ class PineconeClient:
             
             # Process and filter results by similarity threshold
             processed_results = []
+            all_results = []  # Keep all results for fallback
+            
             for match in results.matches:
-                # Apply similarity threshold
+                result = {
+                    "id": match.id,
+                    "score": match.score,
+                    "metadata": match.metadata
+                }
+                all_results.append(result)
+                
+                # Apply similarity threshold for high-quality results
                 if match.score >= similarity_threshold:
-                    result = {
-                        "id": match.id,
-                        "score": match.score,
-                        "metadata": match.metadata
-                    }
                     processed_results.append(result)
                 
                 # Stop if we have enough high-quality results
                 if len(processed_results) >= top_k:
                     break
+            
+            # Fallback: if no results meet threshold, return best available results
+            if not processed_results and all_results:
+                logger.warning(f"⚠️  No results above threshold {similarity_threshold}, using best available results")
+                processed_results = all_results[:top_k]
             
             # Sort by score (highest first) and limit to top_k
             processed_results.sort(key=lambda x: x["score"], reverse=True)
