@@ -519,7 +519,7 @@ export default function Home() {
                   
                   const displayData = isSearchResult ? {
                     id: item.id || index.toString(),
-                    name: item.vendor_name || item.vendor || 'Unknown Artist',
+                    name: item.vendor_name?.split(' - ')[1] || item.vendor_name || item.vendor || 'Unknown Artist',
                     image: item.image || item.image_url || `/api/image/${item.filename}`,
                     rating: item.score ? `${Math.round(item.score * 100)}%` : (item.similarity ? `${Math.round(item.similarity * 100)}%` : 'N/A'),
                     distance: item.vendor_distance || '',
@@ -547,7 +547,7 @@ export default function Home() {
                     }
                     // For vendor search results and image search results
                     if (isVendorResult || isSearchResult) {
-                      const vendorName = item.vendor_name || displayData.name || ''
+                      const vendorName = item.vendor_name || ''
                       const lowerVendorName = vendorName.toLowerCase()
                       
                       // Check for Ariadna first (more specific)
