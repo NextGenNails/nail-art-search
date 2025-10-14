@@ -206,7 +206,8 @@ export default function ArtistProfile() {
                   href={vendor.booking_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full bg-white text-black py-3 px-4 rounded-full text-center font-medium hover:bg-gray-100 transition-colors pp-eiko"
+                  className="block w-full py-3 px-4 rounded-full text-center font-medium transition-colors pp-eiko"
+                  style={{ backgroundColor: '#ea845a', color: 'black' }}
                 >
                   Book Now
                 </a>
