@@ -383,7 +383,7 @@ export default function Home() {
         <link rel="canonical" href="https://naild.app/" />
       </Head>
 
-      <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F0E7DB' }}>
         {/* Navigation */}
         <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="flex justify-center">
@@ -422,7 +422,8 @@ export default function Home() {
             <button
               onClick={handleFindNailTech}
               disabled={isLoading}
-              className="bg-black text-white py-3 sm:py-4 px-6 sm:px-8 rounded-full text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors inline-flex items-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-3 sm:py-4 px-6 sm:px-8 rounded-full text-base sm:text-lg font-medium transition-colors inline-flex items-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: '#ea845a', color: 'black' }}
             >
               {isLoading ? (
                 <>
@@ -454,19 +455,20 @@ export default function Home() {
               <h3 className="text-lg sm:text-xl font-medium text-black mb-4 pp-eiko text-center">
                 Search by Nail Artist
               </h3>
-              <div className="flex space-x-3">
+              <div className="relative">
                 <input
                   type="text"
                   value={vendorSearchQuery}
                   onChange={(e) => setVendorSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleVendorSearch()}
                   placeholder="Search by name, location, or service..."
-                  className="flex-1 px-4 py-3 border-2 border-black border-opacity-20 rounded-full text-black placeholder-gray-500 focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-4 py-3 pr-20 border-2 border-black border-opacity-20 rounded-full text-black placeholder-gray-500 focus:outline-none focus:border-black transition-colors"
                 />
                 <button
                   onClick={handleVendorSearch}
                   disabled={isVendorSearching}
-                  className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded-full font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: '#ea845a', color: 'black' }}
                 >
                   {isVendorSearching ? (
                     <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -521,17 +523,17 @@ export default function Home() {
                     image: item.image || item.image_url || `/api/image/${item.filename}`,
                     rating: item.score ? `${Math.round(item.score * 100)}%` : (item.similarity ? `${Math.round(item.similarity * 100)}%` : 'N/A'),
                     distance: item.vendor_distance || '',
-                    location: item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''),
+                    location: item.vendor_name?.split(' - ')[0] || item.vendor_location || (item.filename ? item.filename.replace(/\.[^/.]+$/, "") : ''),
                     address: item.address || item.vendor_location || `123 Main St, ${item.vendor_location || 'Dallas, TX'}`,
                     website: item.website || item.vendor_website || `https://${(item.vendor_name || item.vendor || 'example').toLowerCase().replace(/\s+/g, '')}.com`,
                     booking_link: item.booking_link
                   } : isVendorResult ? {
                     id: item.id || index.toString(),
                     name: item.vendor_name?.split(' - ')[1] || item.vendor_name || 'Unknown Vendor', // Show tech name only
-                    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
+                    image: item.image || item.image_url || 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center',
                     rating: item.vendor_rating || '4.8',
                     distance: '2.1 mi away', // Default distance
-                    location: `${item.city}, ${item.state}` || item.vendor_location || 'Dallas, TX',
+                    location: item.vendor_name?.split(' - ')[0] || `${item.city}, ${item.state}` || item.vendor_location || 'Dallas, TX',
                     address: item.vendor_location || `123 Main St, ${item.city}, ${item.state}`, // Use real address
                     website: item.vendor_website || item.booking_link || '#',
                     booking_link: item.booking_link || item.vendor_website
@@ -543,11 +545,21 @@ export default function Home() {
                     if (isSearchResult && item.vendor_priority) {
                       return item.id === 'priority_ariadna' ? 'ariadna' : 'mia'
                     }
-                    // For vendor search results
-                    if (isVendorResult) {
-                      return item.vendor_name?.toLowerCase().includes('ariadna') ? 'ariadna' : 
-                             item.vendor_name?.toLowerCase().includes('mia') ? 'mia' : 
-                             item.id || 'ariadna'
+                    // For vendor search results and image search results
+                    if (isVendorResult || isSearchResult) {
+                      const vendorName = item.vendor_name || displayData.name || ''
+                      const lowerVendorName = vendorName.toLowerCase()
+                      
+                      // Check for Ariadna first (more specific)
+                      if (lowerVendorName.includes('ariadna') || lowerVendorName.includes('onix beauty center')) {
+                        return 'ariadna'
+                      }
+                      // Check for Mia
+                      if (lowerVendorName.includes('mia') || lowerVendorName.includes('ivy\'s nail and lash')) {
+                        return 'mia'
+                      }
+                      // Default fallback
+                      return 'ariadna'
                     }
                     // For default vendor cards
                     if (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia')) {
@@ -562,7 +574,7 @@ export default function Home() {
                   return (
                     <div
                       key={displayData.id}
-                      className={`flex-none w-72 sm:w-80 bg-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isClickable ? 'cursor-pointer' : ''}`}
+                      className={`flex-none w-72 sm:w-80 bg-transparent border-2 border-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative ${isClickable ? 'cursor-pointer' : ''}`}
                       onClick={isClickable ? () => router.push(`/artist/${artistId}`) : undefined}
                     >
                       {/* Image with padding and rounded corners - square aspect ratio */}
@@ -593,18 +605,19 @@ export default function Home() {
                       <div className="relative flex flex-col h-28 sm:h-32">
                         {/* Name */}
                         <div className="flex justify-between items-start mb-1">
-                          <h3 className="text-lg sm:text-xl font-medium text-white pp-eiko truncate pr-2">{displayData.name}</h3>
+                          <h3 className="text-lg sm:text-xl font-medium text-black pp-eiko truncate pr-2">{displayData.name}</h3>
                         </div>
                         
-                        {/* Distance and location */}
-                        <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 flex-1">
-                          {displayData.distance} | {displayData.location}
+                        {/* Distance and salon name */}
+                        <p className="text-black text-xs sm:text-sm mb-3 sm:mb-4 flex-1">
+                          {displayData.distance} • {displayData.location}
                         </p>
                         
                         {/* Buttons - bottom right, horizontal */}
                         <div className="flex justify-end items-center space-x-2 mt-auto">
                           <button 
-                            className="bg-gray-700 text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-600 transition-colors h-8 sm:h-9"
+                            className="px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors h-8 sm:h-9"
+                            style={{ backgroundColor: '#ea845a', color: 'black' }}
                             onClick={(e) => {
                               e.stopPropagation()
                               // Handle booking
@@ -617,7 +630,7 @@ export default function Home() {
                           </button>
                           <button
                             type="button"
-                            className="dropdown-button bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600 transition-colors h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center"
+                            className="dropdown-button bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center"
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
@@ -646,11 +659,11 @@ export default function Home() {
                       {openDropdown === displayData.id && (
                         <div className="dropdown-container mt-4 pt-4 border-t border-gray-700">
                           <div className="mb-3">
-                            <p className="text-sm text-gray-400 mb-1">Address:</p>
-                            <p className="text-sm font-medium text-white">{displayData.address || `123 Main St, ${displayData.location}`}</p>
+                            <p className="text-sm text-black mb-1">Address:</p>
+                            <p className="text-sm font-medium text-black">{displayData.address || `123 Main St, ${displayData.location}`}</p>
                           </div>
                           <button 
-                            className="w-full bg-gray-700 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors"
+                            className="w-full bg-black text-black py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
                             onClick={(e) => {
                               e.stopPropagation()
                               const website = displayData.website || displayData.vendor_website || `https://${(displayData.name || 'example').toLowerCase().replace(/\s+/g, '')}.com`
@@ -666,19 +679,15 @@ export default function Home() {
                 })}
                 
                 {/* Join Nail'd Profile Box */}
-                <div className="flex-none w-72 sm:w-80 bg-gray-900 rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative overflow-hidden cursor-pointer"
+                <div className="flex-none w-72 sm:w-80 bg-transparent border-2 border-dashed border-black rounded-2xl p-3 sm:p-4 hover:scale-105 transition-all duration-300 relative overflow-hidden cursor-pointer"
                      onClick={() => window.open('/onboarding', '_blank')}>
                   {/* Image area with gradient background */}
                   <div className="relative mb-3 sm:mb-4">
-                    <div className="w-full h-64 sm:h-72 bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl flex items-center justify-center">
+                    <div className="w-full h-64 sm:h-72 bg-transparent border-2 border-dashed border-black rounded-xl flex items-center justify-center">
                       <div className="text-center">
                         <div className="text-4xl sm:text-5xl mb-2">💼</div>
-                        <div className="text-lg sm:text-xl font-medium text-white pp-eiko">Join Nail&apos;d</div>
+                        <div className="text-lg sm:text-xl font-medium text-black pp-eiko">Join Nail&apos;d</div>
                       </div>
-                    </div>
-                    {/* Badge matching vendor cards */}
-                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-black bg-opacity-60 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm">
-                      New
                     </div>
                   </div>
                   
@@ -686,18 +695,19 @@ export default function Home() {
                   <div className="relative flex flex-col h-28 sm:h-32">
                     {/* Name */}
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-lg sm:text-xl font-medium text-white pp-eiko truncate pr-2">Want Your Business Here?</h3>
+                      <h3 className="text-lg sm:text-xl font-medium text-black pp-eiko truncate pr-2">Want your business here?</h3>
                     </div>
                     
                     {/* Distance and location */}
-                    <p className="text-gray-300 text-xs sm:text-sm mb-3 sm:mb-4 flex-1">
+                    <p className="text-black text-xs sm:text-sm mb-3 sm:mb-4 flex-1">
                       Free profile • Keep 100% of earnings
                     </p>
                     
                     {/* Buttons - bottom right, horizontal */}
                     <div className="flex justify-end items-center space-x-2 mt-auto">
                       <button 
-                        className="bg-gray-700 text-white px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-600 transition-colors h-8 sm:h-9"
+                        className="px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors h-8 sm:h-9"
+                        style={{ backgroundColor: '#ea845a', color: 'black' }}
                         onClick={(e) => {
                           e.stopPropagation()
                           window.open('/onboarding', '_blank')

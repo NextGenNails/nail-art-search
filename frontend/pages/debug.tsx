@@ -78,7 +78,7 @@ export default function DebugPage() {
         <title>Debug - Nail&apos;d</title>
       </Head>
 
-      <div className="min-h-screen p-8" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen p-8" style={{ backgroundColor: '#F0E7DB' }}>
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-black mb-8">🔍 Deployment Debug</h1>
 

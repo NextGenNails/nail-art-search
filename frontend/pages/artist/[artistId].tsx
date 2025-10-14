@@ -74,7 +74,7 @@ export default function ArtistProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F0E7DB' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-black pp-eiko">Loading artist profile...</p>
@@ -85,7 +85,7 @@ export default function ArtistProfile() {
 
   if (!vendor) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F0E7DB' }}>
         <div className="text-center">
           <h1 className="text-2xl font-medium text-black mb-4 pp-eiko">Artist Not Found</h1>
           <Link href="/search-test" className="text-black hover:underline">
@@ -110,11 +110,11 @@ export default function ArtistProfile() {
         <meta property="og:url" content={`https://naild.app/artist/${artistId}`} />
       </Head>
 
-      <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F0E7DB' }}>
         {/* Navigation */}
         <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-2xl font-bold text-black pp-eiko">
+            <Link href="/" className="text-2xl font-medium text-black pp-eiko">
               Nail&apos;d
             </Link>
             <div className="flex space-x-6">
@@ -137,7 +137,7 @@ export default function ArtistProfile() {
                 {vendor.vendor_name.split(' - ')[1] || vendor.vendor_name}
               </h1>
               {/* Salon Name as Subtitle */}
-              <h2 className="text-xl text-gray-500 mb-4 pp-eiko">
+              <h2 className="text-xl text-black mb-4 pp-eiko">
                 {vendor.vendor_name.split(' - ')[0]}
               </h2>
               <p className="text-lg text-gray-600">
@@ -158,7 +158,7 @@ export default function ArtistProfile() {
             {/* Artist Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {/* Contact Info */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="bg-transparent border-2 border-black rounded-2xl p-6">
                 <h3 className="font-medium text-black mb-4 pp-eiko">Contact</h3>
                 <div className="space-y-3">
                   <div>
@@ -180,7 +180,7 @@ export default function ArtistProfile() {
               </div>
 
               {/* Services */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="bg-transparent border-2 border-black rounded-2xl p-6">
                 <h3 className="font-medium text-black mb-4 pp-eiko">Services</h3>
                 <div className="flex flex-wrap gap-2">
                   {vendor.specialties.map((specialty, idx) => (

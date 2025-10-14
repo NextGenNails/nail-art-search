@@ -12,7 +12,7 @@ export default function Onboarding() {
 
       <div className="min-h-screen bg-white">
         {/* Header Section with Cream Background */}
-        <div className="relative overflow-hidden" style={{ backgroundColor: '#FEFAE0' }}>
+        <div className="relative overflow-hidden" style={{ backgroundColor: '#F0E7DB' }}>
           {/* Background Circles */}
           <div className="absolute top-0 right-0 pointer-events-none">
             {/* Top circle */}

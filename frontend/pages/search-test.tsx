@@ -12,6 +12,8 @@ interface SearchResult {
   booking_link: string
   search_score: number
   match_reasons: string[]
+  image?: string
+  image_url?: string
 }
 
 export default function SearchTest() {
@@ -64,7 +66,7 @@ export default function SearchTest() {
         <meta name="description" content="Test the metadata search functionality" />
       </Head>
 
-      <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F0E7DB' }}>
         {/* Navigation */}
         <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="flex justify-between items-center">
@@ -135,7 +137,8 @@ export default function SearchTest() {
                   <button
                     onClick={performSearch}
                     disabled={isLoading}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white px-6 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 pp-eiko"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 rounded-full font-medium transition-colors disabled:opacity-50 pp-eiko"
+                    style={{ backgroundColor: '#ea845a', color: 'black' }}
                   >
                     {isLoading ? 'Searching...' : 'Search'}
                   </button>
@@ -261,38 +264,50 @@ export default function SearchTest() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {results.map((vendor, index) => (
-                  <div key={index} className="bg-black rounded-2xl p-6 hover:scale-105 transition-all duration-300">
+                  <div key={index} className="bg-transparent border-2 border-black rounded-2xl p-6 hover:scale-105 transition-all duration-300">
+                    {/* Vendor Image */}
+                    <div className="mb-4">
+                      <img
+                        src={vendor.image || vendor.image_url || 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center'}
+                        alt={`${vendor.vendor_name} portfolio`}
+                        className="w-full h-48 object-cover rounded-xl"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&h=400&fit=crop&crop=center'
+                        }}
+                      />
+                    </div>
+                    
                     {/* Vendor Header */}
                     <div className="mb-4">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-medium text-white pp-eiko">{vendor.vendor_name}</h3>
+                        <h3 className="text-xl font-medium text-black pp-eiko">{vendor.vendor_name}</h3>
                         <div className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-xs font-medium">
                           {vendor.search_score.toFixed(1)} match
                         </div>
                       </div>
-                      <p className="text-gray-300 text-sm">{vendor.city}, {vendor.state}</p>
+                      <p className="text-black text-sm">{vendor.city}, {vendor.state}</p>
                     </div>
                     
                     {/* Vendor Details */}
                     <div className="space-y-3 mb-4">
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">Instagram:</span>
-                        <span className="text-white text-sm font-medium">{vendor.instagram_handle}</span>
+                        <span className="text-black text-sm">Instagram:</span>
+                        <span className="text-black text-sm font-medium">{vendor.instagram_handle}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400 text-sm">Price Range:</span>
-                        <span className="text-white text-sm font-medium">{vendor.price_range}</span>
+                        <span className="text-black text-sm">Price Range:</span>
+                        <span className="text-black text-sm font-medium">{vendor.price_range}</span>
                       </div>
                     </div>
                     
                     {/* Specialties */}
                     <div className="mb-4">
-                      <p className="text-gray-400 text-sm mb-2">Specialties:</p>
+                      <p className="text-black text-sm mb-2">Specialties:</p>
                       <div className="flex flex-wrap gap-1">
                         {vendor.specialties.slice(0, 6).map((specialty, idx) => (
                           <span 
                             key={idx}
-                            className="px-2 py-1 bg-white bg-opacity-20 text-white rounded text-xs"
+                            className="px-2 py-1 bg-black bg-opacity-10 text-black rounded text-xs"
                           >
                             {specialty.replace('_', ' ')}
                           </span>
@@ -308,7 +323,7 @@ export default function SearchTest() {
                     {/* Match Reasons */}
                     {vendor.match_reasons && vendor.match_reasons.length > 0 && (
                       <div className="mb-4">
-                        <p className="text-gray-400 text-sm mb-2">Why this matches:</p>
+                        <p className="text-black text-sm mb-2">Why this matches:</p>
                         <div className="flex flex-wrap gap-1">
                           {vendor.match_reasons.map((reason, idx) => (
                             <span 
@@ -334,7 +349,8 @@ export default function SearchTest() {
                         href={vendor.booking_link} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="bg-gray-700 text-white py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-600 transition-colors pp-eiko"
+                        className="py-2 px-4 rounded-full text-sm font-medium transition-colors pp-eiko"
+                        style={{ backgroundColor: '#ea845a', color: 'black' }}
                       >
                         Book Now
                       </a>

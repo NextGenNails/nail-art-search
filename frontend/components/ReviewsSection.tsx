@@ -20,13 +20,44 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
   const [selectedRating, setSelectedRating] = useState<number>(0)
   const [hoveredRating, setHoveredRating] = useState<number>(0)
 
+  // Sample reviews for demonstration
+  const sampleReviews: Review[] = [
+    {
+      id: '1',
+      client_name: 'Sarah M.',
+      rating: 5,
+      review_text: 'Absolutely amazing work! The attention to detail is incredible. My nails looked exactly like the inspiration photo I brought in. Will definitely be coming back!',
+      service_date: '2024-01-15',
+      review_photo_url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=200&h=200&fit=crop&crop=center'
+    },
+    {
+      id: '2',
+      client_name: 'Jessica L.',
+      rating: 5,
+      review_text: 'Professional, clean, and so talented! The nail art was flawless and lasted weeks. The salon is beautiful and the service was top-notch.',
+      service_date: '2024-01-10',
+      review_photo_url: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=200&h=200&fit=crop&crop=center'
+    },
+    {
+      id: '3',
+      client_name: 'Amanda K.',
+      rating: 4,
+      review_text: 'Great experience overall! The design came out beautiful and the staff was very friendly. Only minor issue was the wait time, but the results were worth it.',
+      service_date: '2024-01-05'
+    }
+  ]
+
   const loadReviews = useCallback(async () => {
     try {
       const response = await fetch(`/api/vendor/${artistId}/reviews`)
       const data = await response.json()
-      setReviews(data.reviews || [])
+      // Combine API reviews with sample reviews
+      const apiReviews = data.reviews || []
+      setReviews([...apiReviews, ...sampleReviews])
     } catch (error) {
       console.error('Failed to load reviews:', error)
+      // If API fails, show sample reviews
+      setReviews(sampleReviews)
     }
   }, [artistId])
 
@@ -65,10 +96,10 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+    <div className="bg-transparent border-2 border-black rounded-2xl p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-bold text-black pp-eiko">Client Reviews</h3>
+        <h3 className="text-2xl font-medium text-black pp-eiko">Client Reviews</h3>
         <button
           onClick={() => setShowReviewForm(!showReviewForm)}
           className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
@@ -183,7 +214,7 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="border-b border-gray-300 pb-6 last:border-b-0 bg-white">
+            <div key={review.id} className="border-b border-gray-300 pb-6 last:border-b-0 bg-transparent">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <h5 className="font-bold text-black text-lg">{review.client_name}</h5>
@@ -206,25 +237,17 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
               </div>
               
               {/* BULLETPROOF BLACK TEXT */}
-              <div 
-                className="mb-3 p-3 bg-white rounded-lg border border-gray-200"
+              <p 
+                className="text-black font-medium leading-relaxed mb-3"
                 style={{ 
                   color: '#000000 !important',
-                  backgroundColor: '#ffffff',
+                  fontWeight: '500',
                   fontSize: '16px',
                   lineHeight: '1.5'
                 }}
               >
-                <p 
-                  className="text-black font-medium leading-relaxed"
-                  style={{ 
-                    color: '#000000 !important',
-                    fontWeight: '500'
-                  }}
-                >
-                  {review.review_text}
-                </p>
-              </div>
+                {review.review_text}
+              </p>
               
               {review.review_photo_url && (
                 <div className="mt-3">

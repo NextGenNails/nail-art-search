@@ -173,7 +173,7 @@ export default function VendorManage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F0E7DB' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-black">Loading vendor management...</p>
@@ -189,7 +189,7 @@ export default function VendorManage() {
         <meta name="description" content="Upload and manage portfolio photos for your nail art business" />
       </Head>
 
-      <div className="min-h-screen" style={{ backgroundColor: '#FEFAE0' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F0E7DB' }}>
         {/* Navigation */}
         <nav className="pt-8 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="flex justify-between items-center">

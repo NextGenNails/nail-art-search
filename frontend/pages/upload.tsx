@@ -296,7 +296,7 @@ export default function UploadPage() {
                     
                     <div className="p-4">
                       <h3 className="font-medium text-gray-900 mb-1 truncate">
-                        Want Your Business Here?
+                        Want your business here?
                       </h3>
                       
                       {/* Vendor Information */}
