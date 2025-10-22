@@ -12,23 +12,30 @@ export default async function handler(
   }
 
   try {
+    // Define all vendors in the system (regardless of clicks)
+    const allVendors = [
+      { id: 'ariadna', name: 'Ariadna Palomo (Onix Beauty Center)' },
+      { id: 'mia', name: 'Mia Pham (Ivy\'s Nail and Lash)' }
+    ]
+    
     // Calculate total clicks across all vendors
     const totalClicks = Object.values(bookingStats).reduce((sum, count) => sum + count, 0)
     
-    // Format vendor stats with names
-    const vendorStats = Object.entries(bookingStats).map(([vendorId, clicks]) => {
-      let vendorName = vendorId
-      
-      // Map vendor IDs to readable names
-      if (vendorId.includes('ariadna') || vendorId.includes('onix')) {
-        vendorName = 'Ariadna Palomo (Onix Beauty Center)'
-      } else if (vendorId.includes('mia') || vendorId.includes('ivy')) {
-        vendorName = 'Mia Pham (Ivy\'s Nail and Lash)'
-      }
+    // Format vendor stats with names (include all vendors, even with 0 clicks)
+    const vendorStats = allVendors.map(vendor => {
+      // Find clicks for this vendor (check multiple possible IDs)
+      let clicks = 0
+      Object.entries(bookingStats).forEach(([vendorId, clickCount]) => {
+        if (vendorId.includes(vendor.id) || 
+            vendorId.includes(vendor.name.toLowerCase()) ||
+            vendorId === vendor.id) {
+          clicks += clickCount
+        }
+      })
       
       return {
-        vendorId,
-        vendorName,
+        vendorId: vendor.id,
+        vendorName: vendor.name,
         clicks,
         percentage: totalClicks > 0 ? Math.round((clicks / totalClicks) * 100) : 0
       }
@@ -37,10 +44,11 @@ export default async function handler(
     res.status(200).json({
       success: true,
       totalClicks,
-      vendorCount: Object.keys(bookingStats).length,
+      vendorCount: allVendors.length, // Always show total vendors in system
+      activeVendors: Object.keys(bookingStats).length, // Vendors with clicks
       vendorStats,
       lastUpdated: new Date().toISOString(),
-      message: `Booking analytics for ${Object.keys(bookingStats).length} vendors`
+      message: `Booking analytics for ${allVendors.length} vendors`
     })
 
   } catch (error) {

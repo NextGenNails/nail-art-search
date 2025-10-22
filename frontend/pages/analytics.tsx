@@ -11,6 +11,7 @@ interface BookingStats {
 interface AnalyticsData {
   totalClicks: number
   vendorCount: number
+  activeVendors: number
   vendorStats: BookingStats[]
   lastUpdated: string
 }
@@ -89,7 +90,10 @@ export default function Analytics() {
                   <div className="text-2xl font-bold text-green-600 mb-2">
                     {data.vendorCount}
                   </div>
-                  <div className="text-gray-600">Active Vendors</div>
+                  <div className="text-gray-600">Total Vendors</div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    ({data.activeVendors} with clicks)
+                  </div>
                 </div>
                 
                 <div className="bg-white rounded-lg shadow-sm p-6">
