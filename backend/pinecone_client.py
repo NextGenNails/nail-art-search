@@ -116,6 +116,7 @@ class PineconeClient:
             
             # Process and filter results by similarity threshold
             processed_results = []
+
             all_results = []  # Keep all results for fallback
             
             for match in results.matches:
