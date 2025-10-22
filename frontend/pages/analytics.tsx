@@ -49,11 +49,19 @@ export default function Analytics() {
     }
   }, [isAuthenticated])
 
-  // Simple password protection (in production, use proper auth)
+  // Secure password protection using environment variables
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault()
-    // Simple password check (you can change this)
-    if (password === 'naild2024' || password === 'admin123') {
+    
+    // Get password from environment variable (secure)
+    const correctPassword = process.env.NEXT_PUBLIC_ANALYTICS_PASSWORD
+    
+    if (!correctPassword) {
+      setAuthError('Analytics password not configured')
+      return
+    }
+    
+    if (password === correctPassword) {
       setIsAuthenticated(true)
       setAuthError('')
     } else {
