@@ -54,6 +54,32 @@ export default function Home() {
   const carouselRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
+  // Track booking button clicks
+  const trackBookingClick = async (vendorData: any, source: string = 'search_results') => {
+    try {
+      const vendorId = vendorData.id || vendorData.vendor_name?.toLowerCase().replace(/\s+/g, '_') || 'unknown'
+      const vendorName = vendorData.vendor_name || vendorData.name || 'Unknown Vendor'
+      
+      // Track the click
+      await fetch('/api/track-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vendorId,
+          vendorName,
+          source
+        })
+      })
+      
+      console.log(`📊 Tracked booking click for ${vendorName}`)
+    } catch (error) {
+      console.error('❌ Failed to track booking click:', error)
+      // Don't block the booking if tracking fails
+    }
+  }
+
   // Real vendor data - only authentic nail technicians
   const realVendors: NailTech[] = [
     formatVendorForDisplay('ariadna', 'card') as NailTech,
@@ -618,8 +644,12 @@ export default function Home() {
                           <button 
                             className="px-4 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors h-8 sm:h-9"
                             style={{ backgroundColor: '#ea845a', color: 'black' }}
-                            onClick={(e) => {
+                            onClick={async (e) => {
                               e.stopPropagation()
+                              
+                              // Track the booking click
+                              await trackBookingClick(displayData, showResults ? 'search_results' : 'default_display')
+                              
                               // Handle booking
                               if (displayData.booking_link || displayData.website) {
                                 window.open(displayData.booking_link || displayData.website, '_blank')

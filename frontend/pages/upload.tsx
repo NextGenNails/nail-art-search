@@ -26,6 +26,32 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Track booking button clicks
+  const trackBookingClick = async (vendorData: any, source: string = 'upload_results') => {
+    try {
+      const vendorId = vendorData.id || vendorData.vendor_name?.toLowerCase().replace(/\s+/g, '_') || 'unknown'
+      const vendorName = vendorData.vendor_name || vendorData.name || 'Unknown Vendor'
+      
+      // Track the click
+      await fetch('/api/track-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vendorId,
+          vendorName,
+          source
+        })
+      })
+      
+      console.log(`📊 Tracked booking click for ${vendorName}`)
+    } catch (error) {
+      console.error('❌ Failed to track booking click:', error)
+      // Don't block the booking if tracking fails
+    }
+  }
+
   // Note: Vendor data now comes directly from backend API - only real vendors
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,6 +286,7 @@ export default function UploadPage() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium hover:bg-green-700 transition-colors flex-1 text-center"
+                                onClick={() => trackBookingClick(result, 'upload_results')}
                               >
                                 📅 Book Now
                               </a>
