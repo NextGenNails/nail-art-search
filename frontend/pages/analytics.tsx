@@ -20,6 +20,9 @@ export default function Analytics() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [password, setPassword] = useState('')
+  const [authError, setAuthError] = useState('')
 
   const fetchAnalytics = async () => {
     try {
@@ -41,8 +44,82 @@ export default function Analytics() {
   }
 
   useEffect(() => {
-    fetchAnalytics()
-  }, [])
+    if (isAuthenticated) {
+      fetchAnalytics()
+    }
+  }, [isAuthenticated])
+
+  // Simple password protection (in production, use proper auth)
+  const handleAuth = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Simple password check (you can change this)
+    if (password === 'naild2024' || password === 'admin123') {
+      setIsAuthenticated(true)
+      setAuthError('')
+    } else {
+      setAuthError('Incorrect password')
+    }
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Head>
+          <title>Analytics Login - Nail&apos;d</title>
+          <meta name="description" content="Admin access to booking analytics" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-6">
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                🔒 Analytics Access
+              </h1>
+              <p className="text-gray-600">
+                Enter admin password to view booking analytics
+              </p>
+            </div>
+
+            <form onSubmit={handleAuth}>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Admin Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+
+              {authError && (
+                <div className="mb-4 text-sm text-red-600">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Access Analytics
+              </button>
+            </form>
+
+            <div className="mt-4 text-xs text-gray-500 text-center">
+              Protected analytics for business owners only
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>

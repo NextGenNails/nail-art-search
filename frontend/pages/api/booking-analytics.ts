@@ -11,6 +11,14 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  // Basic protection - check for admin header (optional)
+  const adminKey = req.headers['x-admin-key']
+  if (process.env.NODE_ENV === 'production' && adminKey !== 'naild-admin-2024') {
+    // In production, you might want to require admin key
+    // For now, we'll allow access but log it
+    console.log('⚠️  Analytics accessed without admin key from:', req.headers['x-forwarded-for'] || 'unknown')
+  }
+
   try {
     // Define all vendors in the system (regardless of clicks)
     const allVendors = [
