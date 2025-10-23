@@ -114,7 +114,7 @@ export default async function handler(
           
           // First letter matching
           if (vendorName.startsWith(queryLower) || 
-              vendorName.split(' ').some(word => word.startsWith(queryLower))) {
+              vendorName.split(' ').some((word: string) => word.startsWith(queryLower))) {
             score += 3
             matchReasons.push(`Name starts with "${q}"`)
           }
