@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
-// Simple in-memory storage for booking clicks (in production, use a database)
-let bookingStats: { [vendorId: string]: number } = {}
+import { incrementBookingCount, getBookingStats } from '../../lib/bookingStorage'
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,18 +16,16 @@ export default async function handler(
       return res.status(400).json({ error: 'vendorId is required' })
     }
 
-    // Increment booking counter
-    if (!bookingStats[vendorId]) {
-      bookingStats[vendorId] = 0
-    }
-    bookingStats[vendorId]++
+    // Increment booking counter using shared storage
+    const newCount = incrementBookingCount(vendorId)
+    const allStats = getBookingStats()
 
     // Log the booking click for monitoring
     console.log(`📊 Booking click tracked:`, {
       vendorId,
       vendorName: vendorName || 'Unknown',
       source: source || 'unknown',
-      newCount: bookingStats[vendorId],
+      newCount,
       timestamp: new Date().toISOString()
     })
 
@@ -38,8 +34,8 @@ export default async function handler(
       success: true,
       vendorId,
       vendorName,
-      totalClicks: bookingStats[vendorId],
-      allStats: bookingStats,
+      totalClicks: newCount,
+      allStats,
       message: `Booking click tracked for ${vendorName || vendorId}`
     })
 
@@ -50,9 +46,4 @@ export default async function handler(
       details: error instanceof Error ? error.message : 'Unknown error'
     })
   }
-}
-
-// Export function to get current stats (for debugging)
-export function getBookingStats() {
-  return bookingStats
 }

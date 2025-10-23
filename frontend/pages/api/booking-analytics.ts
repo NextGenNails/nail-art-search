@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
-// Simple in-memory storage (matches track-booking.ts)
-let bookingStats: { [vendorId: string]: number } = {}
+import { getBookingStats, getTotalClicks } from '../../lib/bookingStorage'
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,8 +29,9 @@ export default async function handler(
       { id: 'mia', name: 'Mia Pham (Ivy\'s Nail and Lash)' }
     ]
     
-    // Calculate total clicks across all vendors
-    const totalClicks = Object.values(bookingStats).reduce((sum, count) => sum + count, 0)
+    // Get stats from shared storage
+    const bookingStats = getBookingStats()
+    const totalClicks = getTotalClicks()
     
     // Format vendor stats with names (include all vendors, even with 0 clicks)
     const vendorStats = allVendors.map(vendor => {
