@@ -83,7 +83,8 @@ export default function Home() {
   // Real vendor data - only authentic nail technicians
   const realVendors: NailTech[] = [
     formatVendorForDisplay('ariadna', 'card') as NailTech,
-    formatVendorForDisplay('mia', 'card') as NailTech
+    formatVendorForDisplay('mia', 'card') as NailTech,
+    formatVendorForDisplay('jazmyn', 'card') as NailTech
   ]
 
   // Close dropdown when clicking outside

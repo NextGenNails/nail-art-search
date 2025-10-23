@@ -36,7 +36,8 @@ export default async function handler(
     // Define all vendors in the system
     const allVendors = [
       { id: 'ariadna', name: 'Ariadna Palomo (Onix Beauty Center)' },
-      { id: 'mia', name: 'Mia Pham (Ivy\'s Nail and Lash)' }
+      { id: 'mia', name: 'Mia Pham (Ivy\'s Nail and Lash)' },
+      { id: 'jazmyn', name: 'Jazmyn Calles (Venus House of Beauty)' }
     ]
     
     // Get total clicks from database

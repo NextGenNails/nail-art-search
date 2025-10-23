@@ -92,6 +92,53 @@ export const VENDOR_DATA = {
     
     // Images
     profile_image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/Nail_Art_with_Gems_480x480.jpg'
+  },
+
+  jazmyn: {
+    // Display Information
+    tech_name: 'Jazmyn Calles',
+    salon_name: 'Venus House of Beauty',
+    full_display_name: 'Venus House of Beauty - Jazmyn Calles',
+    
+    // Location & Contact
+    address: 'Richardson, TX 75082',
+    city: 'Richardson',
+    state: 'TX',
+    zip_code: '75082',
+    phone: '(972) 555-0300',
+    
+    // Online Presence
+    instagram_handle: '@Venus.HouseofBeauty',
+    instagram_url: 'https://instagram.com/Venus.HouseofBeauty',
+    website: 'https://Venus-houseofbeauty.square.site',
+    booking_link: 'https://Venus-houseofbeauty.square.site',
+    booking_method: 'Online booking',
+    
+    // Services & Pricing
+    specialties: ['acrylic', 'builder_gel', 'dip', 'manicure', 'gel_polish', 'acrylic_toes', 'custom_press_ons'],
+    services_display: ['Acrylic', 'Builder Gel', 'Dip', 'Manicures', 'Gel Polish', 'Acrylic Toes', 'Custom Press Ons'],
+    price_range: '$$$',
+    price_range_detail: '$55-$180',
+    
+    // Business Info
+    rating: '4.7',
+    distance: '2.8 mi away',
+    availability: 'Monday, Thursday-Sunday',
+    hours: {
+      monday: '9:00 AM - 6:00 PM',
+      tuesday: 'Closed',
+      wednesday: 'Closed',
+      thursday: '9:00 AM - 6:00 PM',
+      friday: '9:00 AM - 6:00 PM',
+      saturday: '9:00 AM - 6:00 PM',
+      sunday: '9:00 AM - 6:00 PM'
+    },
+    
+    // Description
+    description: 'Professional nail services by Jazmyn Calles specializing in acrylic, builder gel, dip powder, and custom press-ons. Full service salon offering manicures, gel polish changes, and acrylic toe services. Price range: $55-$180. Book online at venus-houseofbeauty.square.site.',
+    
+    // Images - will use one of their portfolio images
+    profile_image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg'
   }
 } as const
 

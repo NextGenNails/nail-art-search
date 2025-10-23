@@ -63,6 +63,15 @@ REAL_VENDORS = [
         "vendor_rating": "4.8",
         "vendor_distance": "3.2 miles",
         "vendor_phone": "(972) 555-0245"
+    },
+    {
+        "vendor_name": "Venus House of Beauty - Jazmyn Calles",
+        "vendor_location": "Richardson, TX 75082",
+        "vendor_website": "https://Venus-houseofbeauty.square.site",
+        "booking_link": "https://Venus-houseofbeauty.square.site",
+        "vendor_rating": "4.7",
+        "vendor_distance": "2.8 miles",
+        "vendor_phone": "(972) 555-0300"
     }
 ]
 
