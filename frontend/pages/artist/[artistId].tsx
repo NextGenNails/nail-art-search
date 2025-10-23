@@ -30,6 +30,32 @@ interface ArtistImage {
 export default function ArtistProfile() {
   const router = useRouter()
   const { artistId } = router.query
+
+  // Track booking button clicks
+  const trackBookingClick = async (vendorData: any, source: string = 'profile_page') => {
+    try {
+      const vendorId = artistId as string || vendorData.vendor_id || 'unknown'
+      const vendorName = vendorData.vendor_name || vendorData.full_display_name || 'Unknown Vendor'
+      
+      // Track the click
+      await fetch('/api/track-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vendorId,
+          vendorName,
+          source
+        })
+      })
+      
+      console.log(`📊 Tracked booking click for ${vendorName} from profile page`)
+    } catch (error) {
+      console.error('❌ Failed to track booking click:', error)
+      // Don't block the booking if tracking fails
+    }
+  }
   const [vendor, setVendor] = useState<VendorProfile | null>(null)
   const [images, setImages] = useState<ArtistImage[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -208,6 +234,7 @@ export default function ArtistProfile() {
                   rel="noopener noreferrer"
                   className="block w-full py-3 px-4 rounded-full text-center font-medium transition-colors pp-eiko"
                   style={{ backgroundColor: '#ea845a', color: 'black' }}
+                  onClick={() => trackBookingClick(vendor, 'profile_page')}
                 >
                   Book Now
                 </a>

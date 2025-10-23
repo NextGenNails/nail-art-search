@@ -30,6 +30,32 @@ export default function SearchTest() {
     instagram: ''
   })
 
+  // Track booking button clicks
+  const trackBookingClick = async (vendorData: any, source: string = 'search_test') => {
+    try {
+      const vendorId = vendorData.id || vendorData.vendor_name?.toLowerCase().replace(/\s+/g, '_') || 'unknown'
+      const vendorName = vendorData.vendor_name || 'Unknown Vendor'
+      
+      // Track the click
+      await fetch('/api/track-booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vendorId,
+          vendorName,
+          source
+        })
+      })
+      
+      console.log(`📊 Tracked booking click for ${vendorName} from search test`)
+    } catch (error) {
+      console.error('❌ Failed to track booking click:', error)
+      // Don't block the booking if tracking fails
+    }
+  }
+
   const performSearch = async () => {
     setIsLoading(true)
     
@@ -345,12 +371,13 @@ export default function SearchTest() {
                       >
                         View Portfolio
                       </Link>
-                      <a
+                      <a 
                         href={vendor.booking_link} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="py-2 px-4 rounded-full text-sm font-medium transition-colors pp-eiko"
                         style={{ backgroundColor: '#ea845a', color: 'black' }}
+                        onClick={() => trackBookingClick(vendor, 'search_test')}
                       >
                         Book Now
                       </a>
