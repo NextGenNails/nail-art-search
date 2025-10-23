@@ -67,11 +67,29 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
 
   const submitReview = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    // Validate rating is selected (silent validation)
+    if (selectedRating === 0) {
+      // Silent validation - just don't submit if no rating
+      setIsSubmitting(false)
+      return
+    }
+    
     setIsSubmitting(true)
 
     try {
       const formData = new FormData(e.currentTarget)
       formData.append('artistId', artistId)
+
+      // Debug: Log form data being sent
+      console.log('🔍 Submitting review with data:', {
+        artistId,
+        clientName: formData.get('clientName'),
+        rating: formData.get('rating'),
+        reviewText: formData.get('reviewText'),
+        serviceDate: formData.get('serviceDate'),
+        selectedRating
+      })
 
       const response = await fetch('/api/vendor/add-review', {
         method: 'POST',
@@ -79,17 +97,20 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
       })
 
       if (response.ok) {
-        alert('Review submitted successfully!')
-        setShowReviewForm(false)
-        loadReviews() // Reload reviews
-        e.currentTarget.reset()
-        setSelectedRating(0) // Reset rating state
+        const result = await response.json()
+        console.log('✅ Review submission successful:', result)
+        
+        // Clean refresh of the page after successful submission
+        window.location.reload()
+        
       } else {
-        throw new Error('Review submission failed')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('❌ Review submission failed:', errorData)
+        // Silent failure - no user alerts
       }
     } catch (error) {
       console.error('Review submission error:', error)
-      alert('Failed to submit review. Please try again.')
+      // Silent failure - no user alerts
     } finally {
       setIsSubmitting(false)
     }
@@ -161,9 +182,13 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
                 <input
                   type="hidden"
                   name="rating"
-                  value={selectedRating}
+                  value={selectedRating || 5}
                   required
                 />
+                {/* Debug: Show current rating */}
+                <p className="text-xs text-gray-500 mt-1">
+                  Selected rating: {selectedRating || 'None'} stars
+                </p>
               </div>
               {selectedRating > 0 && (
                 <p className="text-sm text-gray-600 mt-1">

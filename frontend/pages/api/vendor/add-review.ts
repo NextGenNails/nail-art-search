@@ -48,8 +48,35 @@ export default async function handler(
     const reviewText = fields.reviewText?.[0] || ''
     const serviceDate = fields.serviceDate?.[0] || new Date().toISOString().split('T')[0]
     
+    // Debug logging to see what we received
+    console.log('📋 Form data received:', {
+      artistId,
+      clientName,
+      rating,
+      reviewText: reviewText?.substring(0, 50) + '...',
+      serviceDate,
+      fieldsKeys: Object.keys(fields),
+      ratingRaw: fields.rating?.[0]
+    })
+    
     if (!artistId || !reviewText || rating < 1 || rating > 5) {
-      return res.status(400).json({ error: 'artistId, reviewText, and valid rating (1-5) required' })
+      console.error('❌ Validation failed:', {
+        hasArtistId: !!artistId,
+        hasReviewText: !!reviewText,
+        reviewTextLength: reviewText?.length,
+        rating,
+        isValidRating: rating >= 1 && rating <= 5
+      })
+      return res.status(400).json({ 
+        error: 'artistId, reviewText, and valid rating (1-5) required',
+        debug: {
+          artistId: !!artistId,
+          reviewText: !!reviewText,
+          reviewTextLength: reviewText?.length,
+          rating,
+          isValidRating: rating >= 1 && rating <= 5
+        }
+      })
     }
 
     console.log(`📝 Review for ${artistId}: ${rating}⭐ by ${clientName}`)
