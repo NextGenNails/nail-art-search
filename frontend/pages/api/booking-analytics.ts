@@ -7,16 +7,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  // Basic protection - check for admin header (optional)
-  const adminKey = req.headers['x-admin-key']
-  if (process.env.NODE_ENV === 'production' && adminKey !== 'naild-admin-2024') {
-    // In production, you might want to require admin key
-    // For now, we'll allow access but log it
-    console.log('⚠️  Analytics accessed without admin key from:', req.headers['x-forwarded-for'] || 'unknown')
+  // Secure server-side password check
+  const { password } = req.body
+  const correctPassword = process.env.ANALYTICS_PASSWORD // Server-side only, not NEXT_PUBLIC_
+  
+  if (!correctPassword) {
+    return res.status(500).json({ error: 'Analytics password not configured on server' })
+  }
+  
+  if (password !== correctPassword) {
+    console.log('⚠️  Failed analytics login attempt from:', req.headers['x-forwarded-for'] || 'unknown')
+    return res.status(401).json({ error: 'Unauthorized' })
   }
 
   try {

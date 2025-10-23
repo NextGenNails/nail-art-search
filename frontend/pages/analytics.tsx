@@ -24,12 +24,21 @@ export default function Analytics() {
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (authPassword: string) => {
     try {
       setLoading(true)
-      const response = await fetch('/api/booking-analytics')
+      const response = await fetch('/api/booking-analytics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: authPassword })
+      })
       
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Incorrect password')
+        }
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
@@ -44,28 +53,20 @@ export default function Analytics() {
   }
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchAnalytics()
-    }
-  }, [isAuthenticated])
+    // Don't auto-fetch, wait for manual authentication
+  }, [])
 
-  // Secure password protection using environment variables
-  const handleAuth = (e: React.FormEvent) => {
+  // Secure server-side password authentication
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Get password from environment variable (secure)
-    const correctPassword = process.env.NEXT_PUBLIC_ANALYTICS_PASSWORD
-    
-    if (!correctPassword) {
-      setAuthError('Analytics password not configured')
-      return
-    }
-    
-    if (password === correctPassword) {
+    try {
+      // Send password to server for verification
+      await fetchAnalytics(password)
       setIsAuthenticated(true)
       setAuthError('')
-    } else {
-      setAuthError('Incorrect password')
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : 'Authentication failed')
     }
   }
 
@@ -152,7 +153,7 @@ export default function Analytics() {
                   </p>
                 </div>
                 <button
-                  onClick={fetchAnalytics}
+                  onClick={() => fetchAnalytics(password)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   disabled={loading}
                 >
