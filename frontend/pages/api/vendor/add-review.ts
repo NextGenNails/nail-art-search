@@ -36,6 +36,7 @@ export default async function handler(
       maxFileSize: 5 * 1024 * 1024, // 5MB limit
       keepExtensions: true,
       allowEmptyFiles: true, // Reviews can be submitted without photos
+      minFileSize: 0, // Allow 0-byte files (no photo uploads)
     })
 
     const [fields, files] = await form.parse(req)
