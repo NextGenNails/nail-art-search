@@ -137,8 +137,8 @@ export const VENDOR_DATA = {
     // Description
     description: 'Professional nail services by Jazmyn Calles specializing in acrylic, builder gel, dip powder, and custom press-ons. Full service salon offering manicures, gel polish changes, and acrylic toe services. Price range: $55-$180. Book online at venus-houseofbeauty.square.site.',
     
-    // Images - will use one of their portfolio images
-    profile_image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/marble-nails_480x480.jpg'
+    // Images - using her stunning butterfly/floral hand design
+    profile_image: 'https://yejyxznoddkegbqzpuex.supabase.co/storage/v1/object/public/nail-art-images/IMG_4416 - Jazmyn Calles.jpeg'
   }
 } as const
 

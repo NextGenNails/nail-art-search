@@ -20,44 +20,19 @@ export default function ReviewsSection({ artistId }: ReviewsSectionProps) {
   const [selectedRating, setSelectedRating] = useState<number>(0)
   const [hoveredRating, setHoveredRating] = useState<number>(0)
 
-  // Sample reviews for demonstration
-  const sampleReviews: Review[] = [
-    {
-      id: '1',
-      client_name: 'Sarah M.',
-      rating: 5,
-      review_text: 'Absolutely amazing work! The attention to detail is incredible. My nails looked exactly like the inspiration photo I brought in. Will definitely be coming back!',
-      service_date: '2024-01-15',
-      review_photo_url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=200&h=200&fit=crop&crop=center'
-    },
-    {
-      id: '2',
-      client_name: 'Jessica L.',
-      rating: 5,
-      review_text: 'Professional, clean, and so talented! The nail art was flawless and lasted weeks. The salon is beautiful and the service was top-notch.',
-      service_date: '2024-01-10',
-      review_photo_url: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=200&h=200&fit=crop&crop=center'
-    },
-    {
-      id: '3',
-      client_name: 'Amanda K.',
-      rating: 4,
-      review_text: 'Great experience overall! The design came out beautiful and the staff was very friendly. Only minor issue was the wait time, but the results were worth it.',
-      service_date: '2024-01-05'
-    }
-  ]
+  // No fake reviews - only show real client reviews from database
 
   const loadReviews = useCallback(async () => {
     try {
       const response = await fetch(`/api/vendor/${artistId}/reviews`)
       const data = await response.json()
-      // Combine API reviews with sample reviews
+      // Only show real reviews from database
       const apiReviews = data.reviews || []
-      setReviews([...apiReviews, ...sampleReviews])
+      setReviews(apiReviews)
     } catch (error) {
       console.error('Failed to load reviews:', error)
-      // If API fails, show sample reviews
-      setReviews(sampleReviews)
+      // If API fails, show no reviews (empty array)
+      setReviews([])
     }
   }, [artistId])
 

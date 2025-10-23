@@ -275,7 +275,10 @@ export default function Home() {
 
   const handleVendorSearch = async () => {
     if (!vendorSearchQuery.trim()) {
-      alert('Please enter a search term')
+      // Don't block empty searches - just show all vendors
+      setVendorSearchResults(realVendors)
+      setShowVendorResults(true)
+      setShowResults(false)
       return
     }
 
@@ -296,7 +299,10 @@ export default function Home() {
           document.getElementById('carousel')?.scrollIntoView({ behavior: 'smooth' })
         }, 100)
       } else {
-        alert('No vendors found. Try searching for "Ariadna" or "Mia"')
+        // Show message but don't block search - let user try different terms
+        console.log('No vendors found for:', vendorSearchQuery)
+        setVendorSearchResults([])
+        setShowVendorResults(true) // Still show the results section with "no results" message
       }
     } catch (error) {
       console.error('Vendor search error:', error)
@@ -585,11 +591,15 @@ export default function Home() {
                       if (lowerVendorName.includes('mia') || lowerVendorName.includes('ivy\'s nail and lash')) {
                         return 'mia'
                       }
+                      // Check for Jazmyn
+                      if (lowerVendorName.includes('jazmyn') || lowerVendorName.includes('venus house of beauty')) {
+                        return 'jazmyn'
+                      }
                       // Default fallback
                       return 'ariadna'
                     }
                     // For default vendor cards
-                    if (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia')) {
+                    if (!showResults && !showVendorResults && (displayData.id === 'ariadna' || displayData.id === 'mia' || displayData.id === 'jazmyn')) {
                       return displayData.id
                     }
                     return null

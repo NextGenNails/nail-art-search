@@ -366,7 +366,11 @@ export default function SearchTest() {
                     {/* Action Buttons */}
                     <div className="flex space-x-3">
                       <Link
-                        href={`/artist/${vendor.vendor_name.includes('Ariadna') ? 'ariadna' : 'mia'}`}
+                        href={`/artist/${
+                          vendor.vendor_name.includes('Ariadna') ? 'ariadna' : 
+                          vendor.vendor_name.includes('Mia') ? 'mia' :
+                          vendor.vendor_name.includes('Jazmyn') ? 'jazmyn' : 'ariadna'
+                        }`}
                         className="flex-1 bg-white text-black py-2 px-4 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors text-center pp-eiko"
                       >
                         View Portfolio
