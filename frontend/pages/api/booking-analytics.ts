@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getBookingStats, getTotalClicks } from '../../lib/bookingStorage'
+import { createClient } from '@supabase/supabase-js'
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,41 +23,63 @@ export default async function handler(
   }
 
   try {
-    // Define all vendors in the system (regardless of clicks)
+    // Initialize Supabase client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(500).json({ error: 'Supabase configuration missing' })
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Define all vendors in the system
     const allVendors = [
       { id: 'ariadna', name: 'Ariadna Palomo (Onix Beauty Center)' },
       { id: 'mia', name: 'Mia Pham (Ivy\'s Nail and Lash)' }
     ]
     
-    // Get stats from shared storage
-    const bookingStats = getBookingStats()
-    const totalClicks = getTotalClicks()
+    // Get total clicks from database
+    const { data: allClicks, error: totalError } = await supabase
+      .from('booking_clicks')
+      .select('*')
     
-    // Format vendor stats with names (include all vendors, even with 0 clicks)
-    const vendorStats = allVendors.map(vendor => {
-      // Find clicks for this vendor (check multiple possible IDs)
-      let clicks = 0
-      Object.entries(bookingStats).forEach(([vendorId, clickCount]) => {
-        if (vendorId.includes(vendor.id) || 
-            vendorId.includes(vendor.name.toLowerCase()) ||
-            vendorId === vendor.id) {
-          clicks += clickCount
+    if (totalError) {
+      console.error('❌ Failed to fetch booking clicks:', totalError)
+      return res.status(500).json({ error: 'Failed to fetch analytics', details: totalError.message })
+    }
+    
+    const totalClicks = allClicks?.length || 0
+    
+    // Get clicks per vendor
+    const vendorStats = await Promise.all(
+      allVendors.map(async (vendor) => {
+        const { data: vendorClicks, error: vendorError } = await supabase
+          .from('booking_clicks')
+          .select('*', { count: 'exact' })
+          .eq('vendor_id', vendor.id)
+        
+        const clicks = vendorClicks?.length || 0
+        
+        return {
+          vendorId: vendor.id,
+          vendorName: vendor.name,
+          clicks,
+          percentage: totalClicks > 0 ? Math.round((clicks / totalClicks) * 100) : 0
         }
       })
-      
-      return {
-        vendorId: vendor.id,
-        vendorName: vendor.name,
-        clicks,
-        percentage: totalClicks > 0 ? Math.round((clicks / totalClicks) * 100) : 0
-      }
-    }).sort((a, b) => b.clicks - a.clicks) // Sort by most clicks first
+    )
+    
+    // Sort by most clicks first
+    vendorStats.sort((a, b) => b.clicks - a.clicks)
+    
+    const activeVendors = vendorStats.filter(v => v.clicks > 0).length
 
     res.status(200).json({
       success: true,
       totalClicks,
-      vendorCount: allVendors.length, // Always show total vendors in system
-      activeVendors: Object.keys(bookingStats).length, // Vendors with clicks
+      vendorCount: allVendors.length,
+      activeVendors,
       vendorStats,
       lastUpdated: new Date().toISOString(),
       message: `Booking analytics for ${allVendors.length} vendors`
